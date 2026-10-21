@@ -1,0 +1,7 @@
+# Winterplan auf Netlify: index.html wird veröffentlicht, die Funktion speichert die Eingaben.
+[build]
+  command = "mkdir -p public && cp index.html public/index.html"
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"

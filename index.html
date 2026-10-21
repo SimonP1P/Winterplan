@@ -342,7 +342,8 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
         return r.text();
       }).then(function (t) {
         S.kv = JSON.parse(t); S.last = t; S.mode = "rest"; S.ready = true; render(true);
-        setInterval(poll, 4000);
+        setInterval(poll, 15000);
+        document.addEventListener("visibilitychange", function () { if (!document.hidden) poll(); });
       }).catch(function () { useLocal(); });
     } catch (e) { useLocal(); }
   }
