@@ -54,6 +54,11 @@ h1{margin:0 0 10px;font-family:var(--f-display);font-weight:800;font-size:clamp(
 .legend .hint{flex-basis:100%}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pc);margin-right:6px}
 .sync{margin:12px 0 0;font-size:12px;color:var(--ink2)}
+.sync.warn{padding:9px 12px;border-radius:8px;background:var(--surface2);border-left:4px solid var(--c2);color:var(--ink);font-size:13px;font-weight:600}
+.bk{margin-top:32px;border-top:1px solid var(--line);padding-top:14px;color:var(--ink2);font-size:13px}
+.bk summary{cursor:pointer;font-weight:600;color:var(--ink)}
+.bk p{margin:10px 0}
+.bk textarea{margin-top:10px;min-height:90px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 
 /* Ansichten */
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0 8px}
@@ -198,6 +203,15 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
   </nav>
   <div id="note"></div>
   <main id="view" role="tabpanel"></main>
+  <details class="bk" id="bk">
+    <summary>Datensicherung</summary>
+    <p>Mit „Sicherung erzeugen“ steht der ganze Plan als Text im Feld. Den Text kopieren und aufbewahren. Zum Zurückholen den Text ins Feld einfügen und „Wiederherstellen“ drücken.</p>
+    <div class="acts">
+      <button type="button" class="btn sm" data-act="bkexport">Sicherung erzeugen</button>
+      <button type="button" class="btn sm" data-act="bkimport">Wiederherstellen</button>
+    </div>
+    <textarea class="in" id="bkt" aria-label="Sicherungstext" placeholder="Hier steht oder erscheint der Sicherungstext"></textarea>
+  </details>
 </div>
 <datalist id="locs"></datalist>
 <div class="toast" aria-live="polite"><span id="toast"></span></div>
@@ -297,8 +311,15 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
 
   /* ---------- Speicher: gemeinsame Datenbank, eigener Server oder dieses Gerät ---------- */
   function lsGet() { try { return JSON.parse(localStorage.getItem("wp_kv") || "{}"); } catch (e) { return {}; } }
-  function lsSet() { try { localStorage.setItem("wp_kv", JSON.stringify(S.kv)); } catch (e) {} }
-  function useLocal() { S.mode = "local"; S.kv = lsGet(); S.ready = true; render(true); }
+  function lsSet() {
+    try { localStorage.setItem("wp_kv", JSON.stringify(S.kv)); S.lsOk = localStorage.getItem("wp_kv") !== null; }
+    catch (e) { S.lsOk = false; }
+  }
+  function useLocal() {
+    S.mode = "local"; S.kv = lsGet(); S.ready = true;
+    try { localStorage.setItem("wp_t", "1"); localStorage.removeItem("wp_t"); S.lsOk = true; } catch (e) { S.lsOk = false; }
+    render(true);
+  }
 
   function connect() {
     if (window.claude && typeof window.claude.use === "function") {
@@ -337,9 +358,10 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     var existed = Object.prototype.hasOwnProperty.call(S.kv, key);
     var next = Object.assign({}, S.kv[key] || {}, partial);
     S.kv[key] = next;
+    if (S.mode === "local") lsSet();
     if (opts && opts.defer) { S.dirty = true; setTimeout(function () { if (!isEditing()) render(true); }, 0); }
     else render(true);
-    if (S.mode === "local") { lsSet(); return; }
+    if (S.mode === "local") return;
     inflight++;
     var run = function () {
       if (S.mode === "db") {
@@ -662,8 +684,12 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     $("stats").innerHTML = statsHtml(m);
     var st = $("strip"); st.style.gridTemplateColumns = "repeat(" + m.days.length + ",minmax(0,1fr))"; st.innerHTML = stripHtml(m);
     $("legend").innerHTML = legendHtml(m);
-    $("sync").textContent = !S.ready ? "Verbinde …" : S.mode === "local"
-      ? "Nur auf diesem Gerät gespeichert. Ohne gemeinsamen Speicher sieht die andere Person Änderungen nicht."
+    var sy = $("sync"), loc = S.ready && S.mode === "local";
+    sy.className = "sync" + (loc ? " warn" : "");
+    sy.textContent = !S.ready ? "Verbinde …" : loc
+      ? (S.lsOk === false
+        ? "Achtung: Dieser Browser erlaubt kein Speichern. Eingaben gehen beim Neuladen verloren. Unten unter „Datensicherung“ kannst du sie als Text sichern."
+        : "Achtung: Nur in diesem Browser gespeichert, nicht gemeinsam. Ein anderes Gerät oder ein Neuladen der Vorschau zeigt sie nicht. Unten unter „Datensicherung“ kannst du sie sichern.")
       : "Gemeinsam gespeichert. Änderungen sehen beide.";
     Array.prototype.forEach.call(document.querySelectorAll(".tabs button"), function (b) {
       b.setAttribute("aria-selected", String(b.dataset.tab === S.tab));
@@ -697,6 +723,20 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
       m.days.forEach(function (d) { if (d.sp === t.dataset.id) n++; if (d.lp === t.dataset.id) n++; });
       if (n > 0) say("Dieser Ort wird noch an " + n + " Tagen genutzt. Erst dort einen anderen wählen.");
       else put("place_" + t.dataset.id, { _del: true });
+    }
+    else if (a === "bkexport") {
+      var bt = $("bkt"); bt.value = JSON.stringify(S.kv); bt.focus(); bt.select();
+      say("Sicherung erzeugt. Text kopieren und aufbewahren.");
+    }
+    else if (a === "bkimport") {
+      var data;
+      try { data = JSON.parse($("bkt").value); } catch (er) { say("Das ist keine gültige Sicherung."); return; }
+      if (!data || typeof data !== "object" || Array.isArray(data)) { say("Das ist keine gültige Sicherung."); return; }
+      var keys = Object.keys(data).filter(function (k) {
+        return /^[A-Za-z0-9_.~:@+-]{1,200}$/.test(k) && k !== "__proto__" && data[k] && typeof data[k] === "object" && !Array.isArray(data[k]);
+      }).slice(0, 3000);
+      keys.forEach(function (k) { put(k, data[k]); });
+      say(keys.length + " Einträge wiederhergestellt.");
     }
     else if (a === "ack") { ack = true; try { localStorage.setItem("wp_ack2", "1"); } catch (er) {} render(true); }
   });
