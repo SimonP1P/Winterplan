@@ -57,7 +57,7 @@ const server = http.createServer((req, res) => {
   if (p.startsWith("/api/state/")) {
     let key;
     try { key = decodeURIComponent(p.slice("/api/state/".length)); } catch (e) { return send(res, 400, '{"error":"key"}'); }
-    if (!KEY_RE.test(key)) return send(res, 400, '{"error":"key"}');
+    if (!KEY_RE.test(key) || key === "__proto__") return send(res, 400, '{"error":"key"}');
 
     if (req.method === "DELETE") {
       delete state[key];
@@ -76,7 +76,7 @@ const server = http.createServer((req, res) => {
         let body;
         try { body = JSON.parse(Buffer.concat(chunks).toString("utf8")); } catch (e) { return send(res, 400, '{"error":"json"}'); }
         if (!body || typeof body !== "object" || Array.isArray(body)) return send(res, 400, '{"error":"object"}');
-        if (!(key in state) && Object.keys(state).length >= MAX_KEYS) return send(res, 507, '{"error":"full"}');
+        if (!Object.prototype.hasOwnProperty.call(state, key) && Object.keys(state).length >= MAX_KEYS) return send(res, 507, '{"error":"full"}');
         state[key] = Object.assign({}, state[key], body);
         save();
         send(res, 200, JSON.stringify(state[key]));
