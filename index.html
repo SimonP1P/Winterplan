@@ -1,0 +1,568 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Winterplan Simon &amp; Liz</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: eine Zeile pro Tag. Links das Datum, daneben zwei Spuren (Simon, Liz).
+   Gleicher Ort am Abend = eine gemeinsame Fläche, sonst zwei getrennte.
+   Oben eine Streifenübersicht aller Tage, darunter vier Ansichten. */
+:root{
+  --bg:#F1F5F6;--surface:#FFFFFF;--surface2:#E7EDF0;--ink:#12212C;--ink2:#506470;--line:#D3DCE1;
+  --accent:#1B5C89;--accent-ink:#FFFFFF;
+  --c0:#2C7A58;--c1:#BE3A5B;--c2:#AE7217;--c3:#2A6CAD;--c4:#7955B2;--c5:#5A6975;
+  --f-display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1721;--surface:#14222E;--surface2:#1B2D3B;--ink:#E5EDF1;--ink2:#9AAEBA;--line:#27384A;
+    --accent:#6DB2E3;--accent-ink:#0D1721;
+    --c0:#5CC298;--c1:#F07F9D;--c2:#E2AE49;--c3:#6CADE6;--c4:#B198E4;--c5:#93A4B0;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1721;--surface:#14222E;--surface2:#1B2D3B;--ink:#E5EDF1;--ink2:#9AAEBA;--line:#27384A;
+  --accent:#6DB2E3;--accent-ink:#0D1721;
+  --c0:#5CC298;--c1:#F07F9D;--c2:#E2AE49;--c3:#6CADE6;--c4:#B198E4;--c5:#93A4B0;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;
+  padding-block:22px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:980px;margin:0 auto}
+.c0{--pc:var(--c0)}.c1{--pc:var(--c1)}.c2{--pc:var(--c2)}.c3{--pc:var(--c3)}.c4{--pc:var(--c4)}.c5{--pc:var(--c5)}
+
+/* Kopf */
+.eyebrow{margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--ink2)}
+h1{margin:0 0 10px;font-family:var(--f-display);font-weight:800;font-size:clamp(30px,7vw,48px);line-height:1.04;letter-spacing:-.015em;text-wrap:balance}
+.stats{margin:0 0 16px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.stats b{color:var(--ink);font-weight:700}
+.stats .sep{margin:0 8px;opacity:.5}
+.strip{display:grid;gap:3px}
+.seg{border:0;background:none;padding:2px 0;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:stretch;min-width:0;border-radius:4px}
+.seg .b{height:14px;border-radius:3px;background:var(--pc)}
+.seg .b.full{height:30px}
+.seg .sd{font-size:10px;line-height:1.2;text-align:center;color:var(--ink2);font-variant-numeric:tabular-nums}
+.seg:hover .sd{color:var(--ink)}
+.legend{margin:10px 0 0;display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13px;color:var(--ink2)}
+.legend .hint{flex-basis:100%}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--pc);margin-right:6px}
+.sync{margin:12px 0 0;font-size:12px;color:var(--ink2)}
+
+/* Ansichten */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:22px 0 8px}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:600;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.callout{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:12px 14px;margin:10px 0 6px}
+.callout p{margin:0;flex:1 1 280px;min-width:0}
+
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+.x{background:none;border:0;padding:2px 0;color:var(--ink2);text-decoration:underline;text-underline-offset:3px;font-size:12px;cursor:pointer}
+.x:hover{color:var(--ink)}
+.in,select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.in{width:100%}
+textarea{width:100%;resize:vertical}
+.meta{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+
+/* Zeitleiste */
+.days{display:flex;flex-direction:column}
+.day{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px 14px;padding:14px 0;border-top:1px solid var(--line);scroll-margin-top:12px}
+.dd{display:flex;flex-direction:column;gap:1px;min-width:0}
+.dow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);font-weight:600}
+.dnum{font-family:var(--f-display);font-weight:800;font-size:23px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tag{font-size:12px;color:var(--accent);font-weight:600;line-height:1.25}
+.day.today .dnum{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;text-decoration-color:var(--accent)}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+.lane{--pc:var(--c5);min-width:0;display:flex;flex-direction:column;gap:1px;padding:9px 11px;border-radius:10px;
+  background:var(--surface);background:color-mix(in srgb,var(--pc) 14%,var(--surface));
+  border:1px solid var(--line);border:1px solid color-mix(in srgb,var(--pc) 34%,var(--line))}
+.lane.both{grid-column:1/-1}
+.lane .who{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);font-weight:600}
+.lane .place{font-weight:700;color:var(--pc);color:color-mix(in srgb,var(--pc) 72%,var(--ink));overflow-wrap:anywhere}
+.lane .from,.lane .lnote{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere}
+.plan{min-width:0;display:flex;flex-direction:column;gap:8px;grid-column:1/-1}
+.ptxt{margin:0;font-size:15px;overflow-wrap:anywhere}
+.travel{align-self:flex-start;font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink2)}
+.edit{align-self:flex-start;background:none;border:0;color:var(--accent);font-weight:600;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.its{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.it{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;min-width:0}
+.it label{display:flex;align-items:flex-start;gap:8px;min-width:0;flex:1 1 200px}
+.it input[type=checkbox],.leg input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;margin:1px 0 0;flex:none}
+.it .done{text-decoration:line-through;color:var(--ink2)}
+.idea{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink2)}
+.editor{grid-column:1/-1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px;min-width:0}
+.edg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink2);min-width:0}
+label.f select,label.f input{font-weight:400;color:var(--ink);font-size:15px}
+.addf{display:flex;flex-wrap:wrap;gap:8px}
+.addf .in{flex:1 1 200px;width:auto}
+
+@media (min-width:760px){
+  .day{grid-template-columns:96px minmax(0,1.15fr) minmax(0,1fr)}
+  .plan{grid-column:auto}
+}
+
+/* Fahrten */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 4px}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:600;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.lead{margin:8px 0 6px;color:var(--ink2)}
+.legs{list-style:none;margin:0;padding:0}
+.leg{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.leg .when{flex:0 0 78px;font-weight:700;font-variant-numeric:tabular-nums}
+.leg .route{flex:1 1 230px;min-width:0;overflow-wrap:anywhere}
+.leg .route b{margin-right:6px}
+.leg .note{flex:1 1 200px;width:auto}
+.leg .bk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2)}
+
+/* Checkliste und Orte */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;margin-top:10px}
+h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px}
+.lst{list-style:none;margin:0 0 12px;padding:0}
+.lst .it{padding:9px 0;border-top:1px solid var(--line)}
+.prow{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.prow .in{flex:1 1 200px;width:auto}
+.sws{display:flex;gap:6px}
+.sw{width:24px;height:24px;border-radius:50%;background:var(--pc);border:0;cursor:pointer;padding:0}
+.sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+.empty{color:var(--ink2);padding:14px 0}
+
+.toast{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;pointer-events:none;
+  padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.toast span{background:var(--ink);color:var(--bg);border-radius:10px;padding:10px 14px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.toast span:empty{display:none}
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">17. Dezember 2026 bis 2. Januar 2027</p>
+    <h1>Winterplan Simon &amp; Liz</h1>
+    <p class="stats" id="stats"></p>
+    <div class="strip" id="strip" role="group" aria-label="Alle Tage im Überblick"></div>
+    <p class="legend" id="legend"></p>
+    <p class="sync" id="sync" aria-live="polite"></p>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Ansicht">
+    <button type="button" role="tab" data-act="tab" data-tab="zeit">Zeitleiste</button>
+    <button type="button" role="tab" data-act="tab" data-tab="reisen">Fahrten</button>
+    <button type="button" role="tab" data-act="tab" data-tab="todo">Checkliste</button>
+    <button type="button" role="tab" data-act="tab" data-tab="orte">Orte</button>
+  </nav>
+  <div id="note"></div>
+  <main id="view" role="tabpanel"></main>
+</div>
+<div class="toast" aria-live="polite"><span id="toast"></span></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Ausgangsplan (aus dem neuen Plan von Simon und Liz) ---------- */
+  var WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  var DEFAULT_PLACES = [
+    { id: "ist", name: "Istrup", c: 0 },
+    { id: "liz", name: "Liz zu Hause", c: 1 },
+    { id: "urlaub", name: "Urlaub (Ort offen)", c: 3 },
+    { id: "flug", name: "Flug", c: 2 }
+  ];
+  var DAYS = [
+    { date: "2026-12-17", plan: "Flug", sp: "flug", lp: "liz" },
+    { date: "2026-12-18", plan: "Ankommen, Liz küssen, Simon kommt (nach Istrup)", sp: "ist", lp: "ist" },
+    { date: "2026-12-19", plan: "Weihnachtsfeier Fam. Horvat", sp: "ist", lp: "ist" },
+    { date: "2026-12-20", tag: "4. Advent", plan: "10:00 GoDi, Essen bei Simons Eltern, dann Weihnachtsmarkt oder so", sp: "ist", lp: "ist" },
+    { date: "2026-12-21", plan: "Liz fährt nach Hause", sp: "ist", lp: "liz" },
+    { date: "2026-12-22", plan: "Simon Zahnarzttermin", sp: "ist", lp: "liz" },
+    { date: "2026-12-23", plan: "Jeder zuhause", sp: "ist", lp: "liz" },
+    { date: "2026-12-24", tag: "Heiligabend", plan: "Beide mit Familie", sp: "ist", lp: "liz" },
+    { date: "2026-12-25", tag: "1. Weihnachtstag", plan: "Jeder zuhause", sp: "ist", lp: "liz" },
+    { date: "2026-12-26", tag: "2. Weihnachtstag", plan: "Simon kommt", sp: "liz", lp: "liz" },
+    { date: "2026-12-27", plan: "11:00 GoDi, Simon fährt nach Hause", sp: "ist", lp: "liz" },
+    { date: "2026-12-28", plan: "Liz muss arbeiten, danach Urlaub", sp: "ist", lp: "liz" },
+    { date: "2026-12-29", plan: "Urlaub mit Liz", sp: "urlaub", lp: "urlaub" },
+    { date: "2026-12-30", plan: "Urlaub mit Liz", sp: "urlaub", lp: "urlaub" },
+    { date: "2026-12-31", tag: "Silvester", plan: "Silvesterfeier, Simons Freunde", sp: "ist", lp: "ist" },
+    { date: "2027-01-01", tag: "Neujahr", plan: "18:00 Neujahrs-GoDi", sp: "ist", lp: "ist" },
+    { date: "2027-01-02", plan: "Liz nach Hause, Simon Flug, Liz sehr sehr dolle in den Arm nehmen", sp: "flug", lp: "liz" }
+  ];
+  var DEFAULT_ITEMS = [
+    { id: "d1", kind: "todo", text: "Urlaubsziel für den 29. und 30.12. festlegen", who: "Beide", date: "2026-12-29", done: false },
+    { id: "d2", kind: "todo", text: "Unterkunft für den Urlaub buchen", who: "Beide", date: "2026-12-29", done: false },
+    { id: "d3", kind: "todo", text: "Fahrt zu Liz am 26.12. klären", who: "Simon", date: "2026-12-26", done: false },
+    { id: "d4", kind: "todo", text: "Check-in für den Rückflug", who: "Simon", date: "2027-01-02", done: false },
+    { id: "d5", kind: "idee", text: "Therme (stand im alten Kalender am 30.12.)", who: "Beide", date: "2026-12-30", done: false },
+    { id: "d6", kind: "idee", text: "Weihnachtsmarkt", who: "Beide", date: "2026-12-20", done: false }
+  ];
+  var MODES = ["", "Flug", "Zug", "Auto", "Bus", "Mitfahrt"];
+
+  /* ---------- Zustand ---------- */
+  var S = { mode: "local", kv: {}, ready: false, tab: "zeit", open: {}, fil: "alle", dirty: false, db: null, last: "" };
+  var ack = false;
+  try { ack = localStorage.getItem("wp_ack") === "1"; } catch (e) {}
+  var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function pad(n) { return n < 10 ? "0" + n : "" + n; }
+  function parseD(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmt(s) { var d = parseD(s); return pad(d.getDate()) + "." + pad(d.getMonth() + 1) + "."; }
+  function wd(s) { return WD[parseD(s).getDay()]; }
+  function short(s) { return wd(s) + " " + fmt(s); }
+  function say(msg) {
+    var t = $("toast"); t.textContent = msg;
+    clearTimeout(say.t); say.t = setTimeout(function () { t.textContent = ""; }, 4200);
+  }
+
+  /* ---------- Speicher: gemeinsame Datenbank, eigener Server oder dieses Gerät ---------- */
+  function lsGet() { try { return JSON.parse(localStorage.getItem("wp_kv") || "{}"); } catch (e) { return {}; } }
+  function lsSet() { try { localStorage.setItem("wp_kv", JSON.stringify(S.kv)); } catch (e) {} }
+  function useLocal() { S.mode = "local"; S.kv = lsGet(); S.ready = true; render(true); }
+
+  function connect() {
+    if (window.claude && typeof window.claude.use === "function") {
+      window.claude.use("db").then(function (db) {
+        if (!db) { useLocal(); return; }
+        S.db = db; S.mode = "db";
+        try {
+          db.collection("kv").onSnapshot(function (snap) {
+            var m = {};
+            snap.docs.forEach(function (d) { m[d.id] = d.data() || {}; });
+            S.kv = m; S.ready = true; render();
+          }, function () { useLocal(); });
+        } catch (e) { useLocal(); }
+      }).catch(function () { useLocal(); });
+      return;
+    }
+    try {
+      fetch("api/state", { cache: "no-store" }).then(function (r) {
+        if (!r.ok) throw new Error("kein Server");
+        return r.text();
+      }).then(function (t) {
+        S.kv = JSON.parse(t); S.last = t; S.mode = "rest"; S.ready = true; render(true);
+        setInterval(poll, 4000);
+      }).catch(function () { useLocal(); });
+    } catch (e) { useLocal(); }
+  }
+  function poll() {
+    if (document.hidden || inflight > 0 || isEditing()) return;
+    fetch("api/state", { cache: "no-store" }).then(function (r) { return r.ok ? r.text() : null; }).then(function (t) {
+      if (t && t !== S.last) { S.last = t; S.kv = JSON.parse(t); render(); }
+    }).catch(function () {});
+  }
+
+  var queue = {}, inflight = 0;
+  function put(key, partial, opts) {
+    var existed = Object.prototype.hasOwnProperty.call(S.kv, key);
+    var next = Object.assign({}, S.kv[key] || {}, partial);
+    S.kv[key] = next;
+    if (opts && opts.defer) { S.dirty = true; setTimeout(function () { if (!isEditing()) render(true); }, 0); }
+    else render(true);
+    if (S.mode === "local") { lsSet(); return; }
+    inflight++;
+    var run = function () {
+      if (S.mode === "db") {
+        var ref = S.db.collection("kv").doc(key);
+        return existed
+          ? ref.update(partial).catch(function () { return ref.set(S.kv[key] || next); })
+          : ref.set(next);
+      }
+      return fetch("api/state/" + encodeURIComponent(key), {
+        method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify(partial)
+      }).then(function (r) { if (!r.ok) throw new Error("http"); });
+    };
+    queue[key] = (queue[key] || Promise.resolve()).then(run).catch(function () {
+      say("Speichern hat nicht geklappt. Bitte noch einmal versuchen.");
+    }).then(function () { inflight--; });
+  }
+
+  /* ---------- Modell: Ausgangsplan plus gespeicherte Änderungen ---------- */
+  function getPlaces() {
+    var out = [], known = {};
+    DEFAULT_PLACES.forEach(function (p) {
+      known[p.id] = 1;
+      var o = S.kv["place_" + p.id];
+      if (o && o._del) return;
+      out.push(Object.assign({}, p, o || {}));
+    });
+    Object.keys(S.kv).filter(function (k) { return k.indexOf("place_") === 0; }).sort().forEach(function (k) {
+      var id = k.slice(6), o = S.kv[k];
+      if (known[id] || o._del) return;
+      out.push({ id: id, name: o.name || "Ort", c: o.c == null ? 5 : o.c });
+    });
+    return out;
+  }
+  function getItems() {
+    var map = {}, order = [];
+    DEFAULT_ITEMS.forEach(function (i) { map[i.id] = Object.assign({}, i); order.push(i.id); });
+    var extra = [];
+    Object.keys(S.kv).filter(function (k) { return k.indexOf("item_") === 0; }).forEach(function (k) {
+      var id = k.slice(5);
+      if (!map[id]) { map[id] = { id: id, kind: "todo", text: "", who: "Beide", date: "", done: false }; extra.push(id); }
+      Object.assign(map[id], S.kv[k]);
+    });
+    extra.sort(function (a, b) { return (map[a].ts || 0) - (map[b].ts || 0); });
+    return order.concat(extra).map(function (id) { return map[id]; }).filter(function (i) { return !i._del && i.text; });
+  }
+  function dayState(d) {
+    var o = S.kv["day_" + d.date] || {};
+    return {
+      date: d.date, tag: d.tag || "",
+      plan: o.plan != null ? o.plan : d.plan,
+      sp: o.sp || d.sp, lp: o.lp || d.lp,
+      sn: o.sn != null ? o.sn : "", ln: o.ln != null ? o.ln : ""
+    };
+  }
+  function model() {
+    var places = getPlaces(), pm = {};
+    places.forEach(function (p) { pm[p.id] = p; });
+    var P = function (id) { return pm[id] || { id: id, name: "Ort offen", c: 5 }; };
+    var days = DAYS.map(dayState), legs = [];
+    for (var i = 1; i < days.length; i++) {
+      ["simon", "liz"].forEach(function (who) {
+        var f = who === "simon" ? "sp" : "lp";
+        if (days[i - 1][f] !== days[i][f]) {
+          legs.push({ date: days[i].date, who: who, from: days[i - 1][f], to: days[i][f], key: days[i].date + "_" + who });
+        }
+      });
+    }
+    return { places: places, P: P, days: days, items: getItems(), legs: legs };
+  }
+
+  /* ---------- Darstellung ---------- */
+  function isEditing() {
+    var a = document.activeElement;
+    return !!a && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && a.type === "text"));
+  }
+  function optsHtml(m, sel) {
+    var h = m.places.map(function (p) {
+      return '<option value="' + esc(p.id) + '"' + (p.id === sel ? " selected" : "") + ">" + esc(p.name) + "</option>";
+    }).join("");
+    if (!m.places.some(function (p) { return p.id === sel; })) h = '<option value="' + esc(sel) + '" selected>Ort offen</option>' + h;
+    return h;
+  }
+  function dayOpts(sel) {
+    return DAYS.map(function (d) {
+      return '<option value="' + d.date + '"' + (d.date === sel ? " selected" : "") + ">" + short(d.date) + "</option>";
+    }).join("");
+  }
+  var WHO = '<option value="Beide">Beide</option><option value="Simon">Simon</option><option value="Liz">Liz</option>';
+
+  function statsHtml(m) {
+    var tog = m.days.filter(function (d) { return d.sp === d.lp; }).length;
+    var open = m.items.filter(function (i) { return i.kind === "todo" && !i.done; }).length;
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var diff = Math.round((parseD(DAYS[0].date) - today) / 864e5);
+    var cd = diff > 0 ? "Noch <b>" + diff + "</b> " + (diff === 1 ? "Tag" : "Tage") + " bis zum Flug am " + fmt(DAYS[0].date) + "<span class=\"sep\">·</span>" : "";
+    return cd + "<b>" + tog + "</b> Tage am selben Ort<span class=\"sep\">·</span><b>" + (m.days.length - tog) +
+      "</b> an verschiedenen<span class=\"sep\">·</span><b>" + m.legs.length + "</b> Fahrten<span class=\"sep\">·</span><b>" + open + "</b> To-dos offen";
+  }
+  function stripHtml(m) {
+    return m.days.map(function (d) {
+      var s = m.P(d.sp), l = m.P(d.lp), same = d.sp === d.lp;
+      var label = short(d.date) + ": " + (same ? "Simon und Liz, " + s.name : "Simon, " + s.name + "; Liz, " + l.name);
+      return '<button type="button" class="seg" data-act="jump" data-date="' + d.date + '" title="' + esc(label) + '" aria-label="' + esc(label) + '">' +
+        (same ? '<span class="b full c' + s.c + '"></span>' : '<span class="b c' + s.c + '"></span><span class="b c' + l.c + '"></span>') +
+        '<span class="sd">' + parseD(d.date).getDate() + "</span></button>";
+    }).join("");
+  }
+  function legendHtml(m) {
+    var used = {};
+    m.days.forEach(function (d) { used[d.sp] = 1; used[d.lp] = 1; });
+    return '<span class="hint">Je Tag oben Simon, unten Liz. Eine durchgehende Fläche heißt: gleicher Ort am Abend.</span>' +
+      m.places.filter(function (p) { return used[p.id]; }).map(function (p) {
+        return '<span><i class="dot c' + p.c + '"></i>' + esc(p.name) + "</span>";
+      }).join("");
+  }
+  function laneHtml(label, pl, note, from) {
+    return '<div class="lane c' + pl.c + '"><span class="who">' + label + '</span><span class="place">' + esc(pl.name) + "</span>" +
+      (from ? '<span class="from">← ' + esc(from) + "</span>" : "") + (note ? '<span class="lnote">' + esc(note) + "</span>" : "") + "</div>";
+  }
+  function itemInline(i) {
+    return '<li class="it"><label><input type="checkbox" data-act="done" data-id="' + esc(i.id) + '"' + (i.done ? " checked" : "") + '><span class="' + (i.done ? "done" : "") + '">' +
+      (i.kind === "idee" ? '<span class="idea">Idee</span> ' : "") + esc(i.text) + "</span></label>" +
+      '<span class="meta">' + esc(i.who) + '</span><button type="button" class="x" data-act="delitem" data-id="' + esc(i.id) + '">Entfernen</button></li>';
+  }
+  function editorHtml(m, d) {
+    return '<div class="editor"><div class="edg">' +
+      '<label class="f">Simon, Ort am Abend<select data-act="sp" data-date="' + d.date + '">' + optsHtml(m, d.sp) + "</select></label>" +
+      '<label class="f">Simon, Notiz<input type="text" data-act="sn" data-date="' + d.date + '" value="' + esc(d.sn) + '" placeholder="z. B. Zug 14:32"></label>' +
+      '<label class="f">Liz, Ort am Abend<select data-act="lp" data-date="' + d.date + '">' + optsHtml(m, d.lp) + "</select></label>" +
+      '<label class="f">Liz, Notiz<input type="text" data-act="ln" data-date="' + d.date + '" value="' + esc(d.ln) + '" placeholder="z. B. Homeoffice bis 16 Uhr"></label></div>' +
+      '<label class="f">Plan für den Tag<textarea rows="2" data-act="plan" data-date="' + d.date + '">' + esc(d.plan) + "</textarea></label>" +
+      '<form class="addf" data-act="additem"><input type="hidden" name="date" value="' + d.date + '">' +
+      '<input class="in" type="text" name="text" placeholder="To-do oder Idee für diesen Tag" aria-label="Neuer Eintrag">' +
+      '<select name="kind" aria-label="Art"><option value="todo">To-do</option><option value="idee">Idee</option></select>' +
+      '<select name="who" aria-label="Wer">' + WHO + '</select><button class="btn" type="submit">Hinzufügen</button></form></div>';
+  }
+  function dayRow(m, d, i) {
+    var prev = i > 0 ? m.days[i - 1] : null, sp = m.P(d.sp), lp = m.P(d.lp), tog = d.sp === d.lp;
+    var fs = prev && prev.sp !== d.sp ? m.P(prev.sp).name : "";
+    var fl = prev && prev.lp !== d.lp ? m.P(prev.lp).name : "";
+    var lanes;
+    if (tog) {
+      var from = "";
+      if (fs && fl) from = fs === fl ? fs : "Simon: " + fs + ", Liz: " + fl;
+      else if (fs) from = "Simon: " + fs; else if (fl) from = "Liz: " + fl;
+      var notes = []; if (d.sn) notes.push("Simon: " + d.sn); if (d.ln) notes.push("Liz: " + d.ln);
+      lanes = '<div class="lane both c' + sp.c + '"><span class="who">Simon &amp; Liz</span><span class="place">' + esc(sp.name) + "</span>" +
+        (from ? '<span class="from">← ' + esc(from) + "</span>" : "") + (notes.length ? '<span class="lnote">' + esc(notes.join(" · ")) + "</span>" : "") + "</div>";
+    } else {
+      lanes = laneHtml("Simon", sp, d.sn, fs) + laneHtml("Liz", lp, d.ln, fl);
+    }
+    var its = m.items.filter(function (x) { return x.date === d.date; });
+    var isOpen = !!S.open[d.date];
+    var t = new Date(); var ts = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
+    return '<article class="day' + (d.date === ts ? " today" : "") + '" id="d-' + d.date + '">' +
+      '<div class="dd"><span class="dow">' + wd(d.date) + '</span><span class="dnum">' + fmt(d.date) + "</span>" + (d.tag ? '<span class="tag">' + esc(d.tag) + "</span>" : "") + "</div>" +
+      '<div class="lanes">' + lanes + "</div>" +
+      '<div class="plan"><p class="ptxt">' + esc(d.plan || "Noch nichts geplant") + "</p>" +
+      (fs || fl ? '<span class="travel">Reisetag</span>' : "") +
+      (its.length ? '<ul class="its">' + its.map(itemInline).join("") + "</ul>" : "") +
+      '<button type="button" class="edit" data-act="toggle" data-date="' + d.date + '" aria-expanded="' + isOpen + '">' + (isOpen ? "Fertig" : "Bearbeiten") + "</button></div>" +
+      (isOpen ? editorHtml(m, d) : "") + "</article>";
+  }
+  function timeline(m) {
+    return '<div class="days">' + m.days.map(function (d, i) { return dayRow(m, d, i); }).join("") + "</div>";
+  }
+  function trips(m) {
+    var list = m.legs.filter(function (l) { return S.fil === "alle" || l.who === S.fil; });
+    var booked = m.legs.filter(function (l) { return (S.kv["leg_" + l.key] || {}).booked; }).length;
+    var chips = [["alle", "Alle"], ["simon", "Simon"], ["liz", "Liz"]].map(function (c) {
+      return '<button type="button" data-act="filter" data-who="' + c[0] + '" aria-pressed="' + (S.fil === c[0]) + '">' + c[1] + "</button>";
+    }).join("");
+    var rows = list.map(function (l) {
+      var det = S.kv["leg_" + l.key] || {}, f = m.P(l.from), t = m.P(l.to);
+      return '<li class="leg"><span class="when">' + short(l.date) + "</span>" +
+        '<span class="route"><b>' + (l.who === "simon" ? "Simon" : "Liz") + '</b><i class="dot c' + f.c + '"></i>' + esc(f.name) + ' → <i class="dot c' + t.c + '"></i>' + esc(t.name) + "</span>" +
+        '<select data-act="mode" data-key="' + l.key + '" aria-label="Verkehrsmittel">' + MODES.map(function (x) {
+          return '<option value="' + x + '"' + ((det.mode || "") === x ? " selected" : "") + ">" + (x || "Verkehrsmittel offen") + "</option>";
+        }).join("") + "</select>" +
+        '<input class="in note" type="text" data-act="lnote" data-key="' + l.key + '" value="' + esc(det.note || "") + '" placeholder="Zeit, Strecke, Buchungsnummer" aria-label="Notiz zur Fahrt">' +
+        '<label class="bk"><input type="checkbox" data-act="booked" data-key="' + l.key + '"' + (det.booked ? " checked" : "") + "> gebucht</label></li>";
+    }).join("");
+    return '<p class="lead">Die Fahrten ergeben sich aus den Ortswechseln in der Zeitleiste. <b>' + m.legs.length + "</b> insgesamt, <b>" + booked + "</b> gebucht.</p>" +
+      '<div class="chips">' + chips + "</div>" + (rows ? '<ul class="legs">' + rows + "</ul>" : '<p class="empty">Keine Fahrten für diese Auswahl.</p>');
+  }
+  function listHtml(m, kind, title, ph) {
+    var its = m.items.filter(function (i) { return i.kind === kind; });
+    its.sort(function (a, b) { return (a.done - b.done) || String(a.date || "9").localeCompare(String(b.date || "9")); });
+    var rows = its.map(function (i) {
+      return '<li class="it"><label><input type="checkbox" data-act="done" data-id="' + esc(i.id) + '"' + (i.done ? " checked" : "") + '><span class="' + (i.done ? "done" : "") + '">' + esc(i.text) + "</span></label>" +
+        '<span class="meta">' + esc(i.who) + (i.date ? " · " + short(i.date) : "") + '</span><button type="button" class="x" data-act="delitem" data-id="' + esc(i.id) + '">Entfernen</button></li>';
+    }).join("");
+    return "<section><h2>" + title + '</h2><ul class="lst">' + (rows || '<li class="empty">Noch nichts drin.</li>') + "</ul>" +
+      '<form class="addf" data-act="additem"><input type="hidden" name="kind" value="' + kind + '">' +
+      '<input class="in" type="text" name="text" placeholder="' + ph + '" aria-label="' + ph + '">' +
+      '<select name="who" aria-label="Wer">' + WHO + '</select><select name="date" aria-label="Datum"><option value="">ohne Datum</option>' + dayOpts("") + "</select>" +
+      '<button class="btn" type="submit">Hinzufügen</button></form></section>';
+  }
+  function todos(m) {
+    return '<div class="cols">' + listHtml(m, "todo", "To-dos", "Neues To-do") + listHtml(m, "idee", "Ideen und Unternehmungen", "Neue Idee") + "</div>";
+  }
+  function placesView(m) {
+    var use = {};
+    m.days.forEach(function (d) { use[d.sp] = (use[d.sp] || 0) + 1; use[d.lp] = (use[d.lp] || 0) + 1; });
+    var rows = m.places.map(function (p) {
+      var sws = [0, 1, 2, 3, 4, 5].map(function (c) {
+        return '<button type="button" class="sw c' + c + '" data-act="pcolor" data-id="' + esc(p.id) + '" data-c="' + c + '" aria-pressed="' + (p.c === c) + '" aria-label="Farbe ' + (c + 1) + '"></button>';
+      }).join("");
+      return '<div class="prow"><div class="sws">' + sws + '</div><input class="in" type="text" data-act="pname" data-id="' + esc(p.id) + '" value="' + esc(p.name) + '" aria-label="Name des Ortes">' +
+        '<span class="meta">' + (use[p.id] || 0) + ' Tage belegt</span><button type="button" class="x" data-act="delplace" data-id="' + esc(p.id) + '">Entfernen</button></div>';
+    }).join("");
+    return '<p class="lead">Hier benennst du Orte um, zum Beispiel „Urlaub (Ort offen)“ in euer Ziel, und legst neue an.</p>' + rows +
+      '<form class="addf" data-act="addplace" style="margin-top:14px"><input class="in" type="text" name="name" placeholder="Neuer Ort" aria-label="Neuer Ort"><button class="btn" type="submit">Ort anlegen</button></form>';
+  }
+  function noteHtml() {
+    if (ack) return "";
+    return '<div class="callout"><p>Die Orte habe ich aus eurem neuen Plan abgeleitet: Istrup, Liz zu Hause, Urlaub mit noch offenem Ziel. Als Ort zählt, wo ihr am Abend seid. Bitte prüfen und bei „Bearbeiten“ anpassen.</p>' +
+      '<button type="button" class="btn" data-act="ack">Verstanden</button></div>';
+  }
+
+  function render(force) {
+    if (!force && isEditing()) { S.dirty = true; return; }
+    S.dirty = false;
+    var m = model();
+    $("stats").innerHTML = statsHtml(m);
+    var st = $("strip"); st.style.gridTemplateColumns = "repeat(" + m.days.length + ",minmax(0,1fr))"; st.innerHTML = stripHtml(m);
+    $("legend").innerHTML = legendHtml(m);
+    $("sync").textContent = !S.ready ? "Verbinde …" : S.mode === "local"
+      ? "Nur auf diesem Gerät gespeichert. Ohne gemeinsamen Speicher sieht die andere Person Änderungen nicht."
+      : "Gemeinsam gespeichert. Änderungen sehen beide.";
+    Array.prototype.forEach.call(document.querySelectorAll(".tabs button"), function (b) {
+      b.setAttribute("aria-selected", String(b.dataset.tab === S.tab));
+    });
+    $("note").innerHTML = S.tab === "zeit" ? noteHtml() : "";
+    $("view").innerHTML = S.tab === "zeit" ? timeline(m) : S.tab === "reisen" ? trips(m) : S.tab === "todo" ? todos(m) : placesView(m);
+  }
+
+  /* ---------- Eingaben ---------- */
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-act]");
+    if (!t) return;
+    var a = t.dataset.act;
+    if (a === "tab") { S.tab = t.dataset.tab; render(true); }
+    else if (a === "toggle") { S.open[t.dataset.date] = !S.open[t.dataset.date]; render(true); }
+    else if (a === "jump") {
+      S.tab = "zeit"; render(true);
+      var el = $("d-" + t.dataset.date);
+      if (el) el.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    }
+    else if (a === "filter") { S.fil = t.dataset.who; render(true); }
+    else if (a === "delitem") { put("item_" + t.dataset.id, { _del: true }); }
+    else if (a === "pcolor") { put("place_" + t.dataset.id, { c: +t.dataset.c }); }
+    else if (a === "delplace") {
+      var m = model(), n = 0;
+      m.days.forEach(function (d) { if (d.sp === t.dataset.id) n++; if (d.lp === t.dataset.id) n++; });
+      if (n > 0) say("Dieser Ort wird noch an " + n + " Tagen genutzt. Erst dort einen anderen wählen.");
+      else put("place_" + t.dataset.id, { _del: true });
+    }
+    else if (a === "ack") { ack = true; try { localStorage.setItem("wp_ack", "1"); } catch (er) {} render(true); }
+  });
+  document.addEventListener("change", function (e) {
+    var t = e.target, a = t.dataset && t.dataset.act;
+    if (!a) return;
+    var dt = t.dataset.date, id = t.dataset.id, key = t.dataset.key, o = {};
+    if (a === "sp" || a === "lp") { o[a] = t.value; put("day_" + dt, o); }
+    else if (a === "sn" || a === "ln" || a === "plan") { o[a] = t.value; put("day_" + dt, o, { defer: true }); }
+    else if (a === "done") put("item_" + id, { done: t.checked });
+    else if (a === "mode") put("leg_" + key, { mode: t.value });
+    else if (a === "lnote") put("leg_" + key, { note: t.value }, { defer: true });
+    else if (a === "booked") put("leg_" + key, { booked: t.checked });
+    else if (a === "pname") put("place_" + id, { name: t.value.trim() || "Ort" }, { defer: true });
+  });
+  document.addEventListener("submit", function (e) {
+    var f = e.target, a = f.dataset && f.dataset.act;
+    if (!a) return;
+    e.preventDefault();
+    var fd = new FormData(f);
+    if (a === "additem") {
+      var text = String(fd.get("text") || "").trim();
+      if (!text) return;
+      var id = "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+      put("item_" + id, { kind: fd.get("kind") || "todo", text: text, who: fd.get("who") || "Beide", date: fd.get("date") || "", done: false, ts: Date.now() });
+    } else if (a === "addplace") {
+      var name = String(fd.get("name") || "").trim();
+      if (!name) return;
+      var m = model();
+      put("place_p" + Date.now().toString(36), { name: name, c: (m.places.length + 1) % 6 });
+    }
+  });
+  document.addEventListener("focusout", function () {
+    setTimeout(function () { if (S.dirty && !isEditing()) render(true); }, 80);
+  });
+
+  render(true);
+  connect();
+})();
+</script>
+</body></html>
