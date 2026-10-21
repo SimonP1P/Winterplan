@@ -2,9 +2,9 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: eine Zeile pro Tag. Links das Datum, daneben zwei Spuren (Simon, Liz).
-   Gleicher Ort am Abend = eine gemeinsame Fläche, sonst zwei getrennte.
-   Oben eine Streifenübersicht aller Tage, darunter vier Ansichten. */
+/* Layout: eine Karte pro Tag. Links das Datum, rechts oben zwei Orts-Spuren (Simon, Liz),
+   darunter die Tagesleiste von 0 bis 24 Uhr mit allen Terminen als Balken, dann die Terminliste.
+   Termine sind die Hauptsache: Wer, Titel, Von, Bis, Wo, Notiz. */
 :root{
   --bg:#F1F5F6;--surface:#FFFFFF;--surface2:#E7EDF0;--ink:#12212C;--ink2:#506470;--line:#D3DCE1;
   --accent:#1B5C89;--accent-ink:#FFFFFF;
@@ -62,69 +62,76 @@ h1{margin:0 0 10px;font-family:var(--f-display);font-weight:800;font-size:clamp(
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .callout{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:10px;padding:12px 14px;margin:10px 0 6px}
 .callout p{margin:0;flex:1 1 280px;min-width:0}
-
 .btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:8px 14px;font-weight:600;cursor:pointer}
+.btn.sm{padding:5px 12px;font-size:13px}
 .x{background:none;border:0;padding:2px 0;color:var(--ink2);text-decoration:underline;text-underline-offset:3px;font-size:12px;cursor:pointer}
 .x:hover{color:var(--ink)}
 .in,select,textarea{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
 .in{width:100%}
-textarea{width:100%;resize:vertical}
 .meta{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink2);min-width:0}
+.f select,.f input{font-weight:400;color:var(--ink);font-size:15px}
+.tsel{display:flex;align-items:center;gap:4px;font-weight:400;color:var(--ink)}
+.tsel select{padding:8px 6px;font-variant-numeric:tabular-nums}
+.addf{display:flex;flex-wrap:wrap;gap:8px}
+.addf .in{flex:1 1 200px;width:auto}
 
 /* Zeitleiste */
 .days{display:flex;flex-direction:column}
-.day{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px 14px;padding:14px 0;border-top:1px solid var(--line);scroll-margin-top:12px}
+.day{display:grid;grid-template-columns:72px minmax(0,1fr);gap:10px 14px;padding:16px 0;border-top:1px solid var(--line);scroll-margin-top:12px}
 .dd{display:flex;flex-direction:column;gap:1px;min-width:0}
 .dow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink2);font-weight:600}
 .dnum{font-family:var(--f-display);font-weight:800;font-size:23px;line-height:1.1;font-variant-numeric:tabular-nums}
 .tag{font-size:12px;color:var(--accent);font-weight:600;line-height:1.25}
 .day.today .dnum{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px;text-decoration-color:var(--accent)}
+.dc{min-width:0;display:flex;flex-direction:column;gap:10px}
 .lanes{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
-.lane{--pc:var(--c5);min-width:0;display:flex;flex-direction:column;gap:1px;padding:9px 11px;border-radius:10px;
+.lane{--pc:var(--c5);min-width:0;display:flex;flex-direction:column;gap:1px;padding:8px 11px;border-radius:10px;
   background:var(--surface);background:color-mix(in srgb,var(--pc) 14%,var(--surface));
   border:1px solid var(--line);border:1px solid color-mix(in srgb,var(--pc) 34%,var(--line))}
 .lane.both{grid-column:1/-1}
 .lane .who{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);font-weight:600}
 .lane .place{font-weight:700;color:var(--pc);color:color-mix(in srgb,var(--pc) 72%,var(--ink));overflow-wrap:anywhere}
-.lane .from,.lane .lnote{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere}
-.plan{min-width:0;display:flex;flex-direction:column;gap:8px;grid-column:1/-1}
-.ptxt{margin:0;font-size:15px;overflow-wrap:anywhere}
-.travel{align-self:flex-start;font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink2)}
-.edit{align-self:flex-start;background:none;border:0;color:var(--accent);font-weight:600;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.lane .from{font-size:12.5px;color:var(--ink2);overflow-wrap:anywhere}
+
+/* Tagesleiste */
+.tl{position:relative;height:46px;border-radius:8px;overflow:hidden;background-color:var(--surface2);
+  background-image:repeating-linear-gradient(to right,transparent 0,transparent calc(25% - 1px),var(--line) calc(25% - 1px),var(--line) 25%)}
+.blk{position:absolute;display:block;border-radius:5px;border:1px solid var(--bg);padding:0 6px;font-size:12px;font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent-ink)}
+.blk.s{top:2px;height:20px;line-height:18px;background:var(--accent)}
+.blk.l{top:24px;height:20px;line-height:18px;background:var(--c4)}
+.blk.b{top:2px;height:42px;line-height:40px;background:var(--ink2)}
+.ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink2);font-variant-numeric:tabular-nums;padding:0 1px;margin-top:-6px}
+.wd{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;flex:none}
+.wd.s{background:var(--accent)}.wd.l{background:var(--c4)}.wd.b{background:var(--ink2)}
+
+/* Terminliste */
+.evs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ev{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline;font-size:15px;min-width:0}
+.ev .tm{flex:0 0 118px;font-weight:700;font-variant-numeric:tabular-nums}
+.ev .et{flex:1 1 160px;min-width:0;overflow-wrap:anywhere}
+.ev .lc{color:var(--ink2)}
+.ev .nt{display:block;font-size:12.5px;color:var(--ink2);padding-left:16px}
 .its{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .it{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;min-width:0}
 .it label{display:flex;align-items:flex-start;gap:8px;min-width:0;flex:1 1 200px}
 .it input[type=checkbox],.leg input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;margin:1px 0 0;flex:none}
 .it .done{text-decoration:line-through;color:var(--ink2)}
 .idea{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink2)}
+.acts{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.travel{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink2)}
+.edit{background:none;border:0;color:var(--accent);font-weight:600;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* Bearbeiten */
 .editor{grid-column:1/-1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px;min-width:0}
+.sub{margin:4px 0 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink2)}
+.evx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}
+.evx.add{border-color:var(--accent)}
 .edg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
-label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--ink2);min-width:0}
-label.f select,label.f input{font-weight:400;color:var(--ink);font-size:15px}
-.addf{display:flex;flex-wrap:wrap;gap:8px}
-.addf .in{flex:1 1 200px;width:auto}
-input[type=time]{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 8px;min-width:0;font-variant-numeric:tabular-nums}
-.sub{margin:2px 0 0;font-size:12px;font-weight:600;color:var(--ink2)}
-.tl{position:relative;height:26px;background:var(--surface2);border-radius:6px}
-.blk{position:absolute;border-radius:4px;border:1px solid var(--bg)}
-.blk.s,.wd.s{background:var(--accent)}
-.blk.l,.wd.l{background:var(--c4)}
-.blk.b,.wd.b{background:var(--ink2)}
-.blk.s{top:2px;height:10px}
-.blk.l{top:14px;height:10px}
-.blk.b{top:2px;height:22px}
-.ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink2);font-variant-numeric:tabular-nums;padding:0 1px}
-.evs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
-.ev{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline;font-size:14px;min-width:0}
-.ev .tm{flex:0 0 118px;font-weight:700;font-variant-numeric:tabular-nums}
-.ev .et{flex:1 1 140px;min-width:0;overflow-wrap:anywhere}
-.wd{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px}
-.evr{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.evr .in{flex:1 1 150px;width:auto}
 
 @media (min-width:760px){
-  .day{grid-template-columns:96px minmax(0,1.15fr) minmax(0,1fr)}
-  .plan{grid-column:auto}
+  .day{grid-template-columns:96px minmax(0,1fr)}
 }
 
 /* Fahrten */
@@ -176,6 +183,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
   <div id="note"></div>
   <main id="view" role="tabpanel"></main>
 </div>
+<datalist id="locs"></datalist>
 <div class="toast" aria-live="polite"><span id="toast"></span></div>
 
 <script>
@@ -184,30 +192,60 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
 
   /* ---------- Ausgangsplan (aus dem neuen Plan von Simon und Liz) ---------- */
   var WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+  var WHOS = ["Beide", "Simon", "Liz"];
   var DEFAULT_PLACES = [
     { id: "ist", name: "Istrup", c: 0 },
     { id: "liz", name: "Liz zu Hause", c: 1 },
     { id: "urlaub", name: "Urlaub (Ort offen)", c: 3 },
     { id: "flug", name: "Flug", c: 2 }
   ];
+  /* Ort am Abend je Person; Termine stehen unten in DEFAULT_EVENTS */
   var DAYS = [
-    { date: "2026-12-17", plan: "Flug", sp: "flug", lp: "liz" },
-    { date: "2026-12-18", plan: "Ankommen, Liz küssen, Simon kommt (nach Istrup)", sp: "ist", lp: "ist" },
-    { date: "2026-12-19", plan: "Weihnachtsfeier Fam. Horvat", sp: "ist", lp: "ist" },
-    { date: "2026-12-20", tag: "4. Advent", plan: "Essen bei Simons Eltern, dann Weihnachtsmarkt oder so", sp: "ist", lp: "ist" },
-    { date: "2026-12-21", plan: "Liz fährt nach Hause", sp: "ist", lp: "liz" },
-    { date: "2026-12-22", plan: "Simon Zahnarzttermin", sp: "ist", lp: "liz" },
-    { date: "2026-12-23", plan: "Jeder zuhause", sp: "ist", lp: "liz" },
-    { date: "2026-12-24", tag: "Heiligabend", plan: "Beide mit Familie", sp: "ist", lp: "liz" },
-    { date: "2026-12-25", tag: "1. Weihnachtstag", plan: "Jeder zuhause", sp: "ist", lp: "liz" },
-    { date: "2026-12-26", tag: "2. Weihnachtstag", plan: "Simon kommt", sp: "liz", lp: "liz" },
-    { date: "2026-12-27", plan: "Simon fährt nach Hause", sp: "ist", lp: "liz" },
-    { date: "2026-12-28", plan: "Liz muss arbeiten, danach Urlaub", sp: "ist", lp: "liz" },
-    { date: "2026-12-29", plan: "Urlaub mit Liz", sp: "urlaub", lp: "urlaub" },
-    { date: "2026-12-30", plan: "Urlaub mit Liz", sp: "urlaub", lp: "urlaub" },
-    { date: "2026-12-31", tag: "Silvester", plan: "Silvesterfeier, Simons Freunde", sp: "ist", lp: "ist" },
-    { date: "2027-01-01", tag: "Neujahr", plan: "", sp: "ist", lp: "ist" },
-    { date: "2027-01-02", plan: "Liz nach Hause, Simon Flug, Liz sehr sehr dolle in den Arm nehmen", sp: "flug", lp: "liz" }
+    { date: "2026-12-17", sp: "flug", lp: "liz" },
+    { date: "2026-12-18", sp: "ist", lp: "ist" },
+    { date: "2026-12-19", sp: "ist", lp: "ist" },
+    { date: "2026-12-20", tag: "4. Advent", sp: "ist", lp: "ist" },
+    { date: "2026-12-21", sp: "ist", lp: "liz" },
+    { date: "2026-12-22", sp: "ist", lp: "liz" },
+    { date: "2026-12-23", sp: "ist", lp: "liz" },
+    { date: "2026-12-24", tag: "Heiligabend", sp: "ist", lp: "liz" },
+    { date: "2026-12-25", tag: "1. Weihnachtstag", sp: "ist", lp: "liz" },
+    { date: "2026-12-26", tag: "2. Weihnachtstag", sp: "liz", lp: "liz" },
+    { date: "2026-12-27", sp: "ist", lp: "liz" },
+    { date: "2026-12-28", sp: "ist", lp: "liz" },
+    { date: "2026-12-29", sp: "urlaub", lp: "urlaub" },
+    { date: "2026-12-30", sp: "urlaub", lp: "urlaub" },
+    { date: "2026-12-31", tag: "Silvester", sp: "ist", lp: "ist" },
+    { date: "2027-01-01", tag: "Neujahr", sp: "ist", lp: "ist" },
+    { date: "2027-01-02", sp: "flug", lp: "liz" }
+  ];
+  /* Der Plantext vom neuen Plan, in Termine zerlegt. Uhrzeiten nur dort, wo sie im Plan standen. */
+  var DEFAULT_EVENTS = [
+    { id: "s01", date: "2026-12-17", text: "Flug", who: "Simon" },
+    { id: "s02", date: "2026-12-18", text: "Ankommen, Liz küssen", who: "Beide", loc: "Istrup" },
+    { id: "s03", date: "2026-12-19", text: "Weihnachtsfeier Fam. Horvat", who: "Beide" },
+    { id: "s04", date: "2026-12-20", start: "10:00", text: "GoDi", who: "Beide" },
+    { id: "s05", date: "2026-12-20", text: "Essen bei Simons Eltern", who: "Beide" },
+    { id: "s06", date: "2026-12-20", text: "Weihnachtsmarkt oder so", who: "Beide" },
+    { id: "s07", date: "2026-12-21", text: "Liz fährt nach Hause", who: "Liz" },
+    { id: "s08", date: "2026-12-22", text: "Zahnarzttermin", who: "Simon" },
+    { id: "s09", date: "2026-12-23", text: "Zuhause", who: "Simon" },
+    { id: "s10", date: "2026-12-23", text: "Zuhause", who: "Liz" },
+    { id: "s11", date: "2026-12-24", text: "Heiligabend mit Familie", who: "Simon" },
+    { id: "s12", date: "2026-12-24", text: "Heiligabend mit Familie", who: "Liz" },
+    { id: "s13", date: "2026-12-25", text: "Zuhause", who: "Simon" },
+    { id: "s14", date: "2026-12-25", text: "Zuhause", who: "Liz" },
+    { id: "s15", date: "2026-12-26", text: "Simon kommt", who: "Beide" },
+    { id: "s16", date: "2026-12-27", start: "11:00", text: "GoDi", who: "Beide" },
+    { id: "s17", date: "2026-12-27", text: "Simon fährt nach Hause", who: "Simon" },
+    { id: "s18", date: "2026-12-28", text: "Liz muss arbeiten", who: "Liz", note: "danach Urlaub" },
+    { id: "s19", date: "2026-12-29", text: "Urlaub mit Liz", who: "Beide" },
+    { id: "s20", date: "2026-12-30", text: "Urlaub mit Liz", who: "Beide" },
+    { id: "s21", date: "2026-12-31", text: "Silvesterfeier, Simons Freunde", who: "Beide" },
+    { id: "s22", date: "2027-01-01", start: "18:00", text: "Neujahrs-GoDi", who: "Beide" },
+    { id: "s23", date: "2027-01-02", text: "Liz fährt nach Hause", who: "Liz" },
+    { id: "s24", date: "2027-01-02", text: "Flug", who: "Simon" },
+    { id: "s25", date: "2027-01-02", text: "Liz sehr sehr dolle in den Arm nehmen", who: "Simon" }
   ];
   var DEFAULT_ITEMS = [
     { id: "d1", kind: "todo", text: "Urlaubsziel für den 29. und 30.12. festlegen", who: "Beide", date: "2026-12-29", done: false },
@@ -217,19 +255,12 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     { id: "d5", kind: "idee", text: "Therme (stand im alten Kalender am 30.12.)", who: "Beide", date: "2026-12-30", done: false },
     { id: "d6", kind: "idee", text: "Weihnachtsmarkt", who: "Beide", date: "2026-12-20", done: false }
   ];
-  /* Termine mit Uhrzeit. Die drei Gottesdienste standen vorher mit Uhrzeit im Plantext; Enden sind offen. */
-  var DEFAULT_EVENTS = [
-    { id: "e1", date: "2026-12-20", start: "10:00", end: "", text: "GoDi", who: "Beide" },
-    { id: "e2", date: "2026-12-27", start: "11:00", end: "", text: "GoDi", who: "Beide" },
-    { id: "e3", date: "2027-01-01", start: "18:00", end: "", text: "Neujahrs-GoDi", who: "Beide" }
-  ];
-  var WHOS = ["Beide", "Simon", "Liz"];
   var MODES = ["", "Flug", "Zug", "Auto", "Bus", "Mitfahrt"];
 
   /* ---------- Zustand ---------- */
-  var S = { mode: "local", kv: {}, ready: false, tab: "zeit", open: {}, fil: "alle", dirty: false, db: null, last: "" };
+  var S = { mode: "local", kv: {}, ready: false, tab: "zeit", open: {}, fil: "alle", dirty: false, db: null, last: "", lastWho: "Beide" };
   var ack = false;
-  try { ack = localStorage.getItem("wp_ack") === "1"; } catch (e) {}
+  try { ack = localStorage.getItem("wp_ack2") === "1"; } catch (e) {}
   var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
   function $(id) { return document.getElementById(id); }
@@ -327,9 +358,8 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     return out;
   }
   function getItems() {
-    var map = {}, order = [];
+    var map = {}, order = [], extra = [];
     DEFAULT_ITEMS.forEach(function (i) { map[i.id] = Object.assign({}, i); order.push(i.id); });
-    var extra = [];
     Object.keys(S.kv).filter(function (k) { return k.indexOf("item_") === 0; }).forEach(function (k) {
       var id = k.slice(5);
       if (!map[id]) { map[id] = { id: id, kind: "todo", text: "", who: "Beide", date: "", done: false }; extra.push(id); }
@@ -340,10 +370,10 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
   }
   function getEvents() {
     var map = {}, order = [], extra = [];
-    DEFAULT_EVENTS.forEach(function (e) { map[e.id] = Object.assign({}, e); order.push(e.id); });
+    DEFAULT_EVENTS.forEach(function (e) { map[e.id] = Object.assign({ start: "", end: "", loc: "", note: "" }, e); order.push(e.id); });
     Object.keys(S.kv).filter(function (k) { return k.indexOf("ev_") === 0; }).forEach(function (k) {
       var id = k.slice(3);
-      if (!map[id]) { map[id] = { id: id, date: "", start: "", end: "", text: "", who: "Beide" }; extra.push(id); }
+      if (!map[id]) { map[id] = { id: id, date: "", start: "", end: "", text: "", who: "Beide", loc: "", note: "" }; extra.push(id); }
       Object.assign(map[id], S.kv[k]);
     });
     extra.sort(function (a, b) { return (map[a].ts || 0) - (map[b].ts || 0); });
@@ -351,12 +381,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
   }
   function dayState(d) {
     var o = S.kv["day_" + d.date] || {};
-    return {
-      date: d.date, tag: d.tag || "",
-      plan: o.plan != null ? o.plan : d.plan,
-      sp: o.sp || d.sp, lp: o.lp || d.lp,
-      sn: o.sn != null ? o.sn : "", ln: o.ln != null ? o.ln : ""
-    };
+    return { date: d.date, tag: d.tag || "", sp: o.sp || d.sp, lp: o.lp || d.lp };
   }
   function model() {
     var places = getPlaces(), pm = {};
@@ -374,10 +399,35 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     return { places: places, P: P, days: days, items: getItems(), events: getEvents(), legs: legs };
   }
 
+  /* ---------- Zeit: 24 Stunden, Minuten in 5er-Schritten ---------- */
+  function tmin(t) { if (!t) return null; var p = String(t).split(":"); return (+p[0]) * 60 + (+p[1] || 0); }
+  function evLabel(e) {
+    if (!e.start) return "ganztägig";
+    var a = tmin(e.start), b = tmin(e.end);
+    return e.start + (e.end ? "–" + e.end : "") + (b !== null && b < a ? " (+1)" : "");
+  }
+  function timeSel(attrs, val, disabledIfEmpty) {
+    var h = "", m = "";
+    if (val) { var p = String(val).split(":"); h = pad(+p[0]); m = pad(+p[1] || 0); }
+    var ho = '<option value="">–</option>', i;
+    for (i = 0; i < 24; i++) ho += '<option value="' + pad(i) + '"' + (pad(i) === h ? " selected" : "") + ">" + pad(i) + "</option>";
+    var mins = [];
+    for (i = 0; i < 60; i += 5) mins.push(pad(i));
+    if (m && mins.indexOf(m) < 0) { mins.push(m); mins.sort(); }
+    var mo = mins.map(function (x) { return '<option value="' + x + '"' + (x === m ? " selected" : "") + ">" + x + "</option>"; }).join("");
+    return '<span class="tsel">' +
+      '<select ' + attrs.h + ' aria-label="Stunde">' + ho + "</select><span>:</span>" +
+      '<select ' + attrs.m + ' aria-label="Minute"' + (disabledIfEmpty && h === "" ? " disabled" : "") + ">" + mo + "</select></span>";
+  }
+  function whoCls(w) { return { Beide: "b", Simon: "s", Liz: "l" }[w] || "b"; }
+  function whoOpts(sel) {
+    return WHOS.map(function (w) { return '<option value="' + w + '"' + (w === sel ? " selected" : "") + ">" + w + "</option>"; }).join("");
+  }
+
   /* ---------- Darstellung ---------- */
   function isEditing() {
     var a = document.activeElement;
-    return !!a && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && (a.type === "text" || a.type === "time")));
+    return !!a && (a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && a.type === "text"));
   }
   function optsHtml(m, sel) {
     var h = m.places.map(function (p) {
@@ -398,9 +448,10 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     var open = m.items.filter(function (i) { return i.kind === "todo" && !i.done; }).length;
     var today = new Date(); today.setHours(0, 0, 0, 0);
     var diff = Math.round((parseD(DAYS[0].date) - today) / 864e5);
-    var cd = diff > 0 ? "Noch <b>" + diff + "</b> " + (diff === 1 ? "Tag" : "Tage") + " bis zum Flug am " + fmt(DAYS[0].date) + "<span class=\"sep\">·</span>" : "";
-    return cd + "<b>" + tog + "</b> Tage am selben Ort<span class=\"sep\">·</span><b>" + (m.days.length - tog) +
-      "</b> an verschiedenen<span class=\"sep\">·</span><b>" + m.legs.length + "</b> Fahrten<span class=\"sep\">·</span><b>" + open + "</b> To-dos offen";
+    var sep = '<span class="sep">·</span>';
+    var cd = diff > 0 ? "Noch <b>" + diff + "</b> " + (diff === 1 ? "Tag" : "Tage") + " bis zum Flug am " + fmt(DAYS[0].date) + sep : "";
+    return cd + "<b>" + m.events.length + "</b> Termine" + sep + "<b>" + tog + "</b> Tage am selben Ort" + sep +
+      "<b>" + m.legs.length + "</b> Fahrten" + sep + "<b>" + open + "</b> To-dos offen";
   }
   function stripHtml(m) {
     return m.days.map(function (d) {
@@ -417,75 +468,73 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     return '<span class="hint">Je Tag oben Simon, unten Liz. Eine durchgehende Fläche heißt: gleicher Ort am Abend.</span>' +
       m.places.filter(function (p) { return used[p.id]; }).map(function (p) {
         return '<span><i class="dot c' + p.c + '"></i>' + esc(p.name) + "</span>";
-      }).join("");
+      }).join("") +
+      '<span class="hint">Termine: <i class="wd s"></i>Simon <i class="wd l"></i>Liz <i class="wd b"></i>Beide</span>';
   }
-  function laneHtml(label, pl, note, from) {
+  function laneHtml(label, pl, from) {
     return '<div class="lane c' + pl.c + '"><span class="who">' + label + '</span><span class="place">' + esc(pl.name) + "</span>" +
-      (from ? '<span class="from">← ' + esc(from) + "</span>" : "") + (note ? '<span class="lnote">' + esc(note) + "</span>" : "") + "</div>";
+      (from ? '<span class="from">← ' + esc(from) + "</span>" : "") + "</div>";
   }
   function itemInline(i) {
     return '<li class="it"><label><input type="checkbox" data-act="done" data-id="' + esc(i.id) + '"' + (i.done ? " checked" : "") + '><span class="' + (i.done ? "done" : "") + '">' +
       (i.kind === "idee" ? '<span class="idea">Idee</span> ' : "") + esc(i.text) + "</span></label>" +
       '<span class="meta">' + esc(i.who) + '</span><button type="button" class="x" data-act="delitem" data-id="' + esc(i.id) + '">Entfernen</button></li>';
   }
-  function tmin(t) { if (!t) return null; var p = String(t).split(":"); return (+p[0]) * 60 + (+p[1] || 0); }
-  function evLabel(e) {
-    if (!e.start) return "ganztägig";
-    var a = tmin(e.start), b = tmin(e.end);
-    return e.start + (e.end ? "–" + e.end : "") + (b !== null && b < a ? " (+1)" : "");
-  }
-  function whoCls(w) { return { Beide: "b", Simon: "s", Liz: "l" }[w] || "b"; }
   function dayEvents(m, date) {
     return m.events.filter(function (e) { return e.date === date; }).sort(function (a, b) {
-      return String(a.start || "").localeCompare(String(b.start || "")) || String(a.text).localeCompare(String(b.text));
+      return String(a.start || "").localeCompare(String(b.start || "")) || String(a.end || "").localeCompare(String(b.end || "")) || String(a.text).localeCompare(String(b.text));
     });
   }
-  function evHtml(evs) {
-    if (!evs.length) return "";
+  function barHtml(evs) {
     var timed = evs.filter(function (e) { return e.start; });
-    var bar = "";
-    if (timed.length) {
-      bar = '<div class="tl" aria-hidden="true">' + timed.map(function (e) {
-        var a = tmin(e.start), b = e.end ? tmin(e.end) : a + 45;
-        if (b <= a) b = 1440;
-        var l = Math.min(a / 14.4, 98.5), w = Math.max((b - a) / 14.4, 1.4);
-        w = Math.min(w, 100 - l);
-        return '<span class="blk ' + whoCls(e.who) + '" style="left:' + l.toFixed(2) + "%;width:" + w.toFixed(2) + '%" title="' + esc(evLabel(e) + " " + e.text + " (" + e.who + ")") + '"></span>';
-      }).join("") + '</div><div class="ticks" aria-hidden="true"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>';
-    }
-    return bar + '<ul class="evs">' + evs.map(function (e) {
-      return '<li class="ev"><span class="tm">' + esc(evLabel(e)) + '</span><span class="et"><i class="wd ' + whoCls(e.who) + '"></i>' + esc(e.text) + '</span><span class="meta">' + esc(e.who) + "</span></li>";
+    if (!timed.length) return "";
+    return '<div><div class="tl" aria-hidden="true">' + timed.map(function (e) {
+      var a = tmin(e.start), b = e.end ? tmin(e.end) : a + 45;
+      if (b <= a) b = 1440;
+      var l = Math.min(a / 14.4, 98), w = Math.min(Math.max((b - a) / 14.4, 1.4), 100 - l);
+      return '<span class="blk ' + whoCls(e.who) + '" style="left:' + l.toFixed(2) + "%;width:" + w.toFixed(2) + '%" title="' +
+        esc(evLabel(e) + " " + e.text + (e.loc ? ", " + e.loc : "") + " (" + e.who + ")") + '">' + esc(e.text) + "</span>";
+    }).join("") + '</div><div class="ticks" aria-hidden="true"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div></div>';
+  }
+  function listHtml(evs) {
+    if (!evs.length) return "";
+    return '<ul class="evs">' + evs.map(function (e) {
+      return '<li class="ev"><span class="tm">' + esc(evLabel(e)) + '</span><span class="et"><i class="wd ' + whoCls(e.who) + '"></i><b>' + esc(e.text) + "</b>" +
+        (e.loc ? '<span class="lc">, ' + esc(e.loc) + "</span>" : "") + '<span class="meta"> · ' + esc(e.who) + "</span>" +
+        (e.note ? '<span class="nt">' + esc(e.note) + "</span>" : "") + "</span></li>";
     }).join("") + "</ul>";
   }
-  function whoOpts(sel) {
-    return WHOS.map(function (w) { return '<option value="' + w + '"' + (w === sel ? " selected" : "") + ">" + w + "</option>"; }).join("");
-  }
-  function evEditHtml(evs, date) {
-    var rows = evs.map(function (e) {
-      return '<div class="evr"><input type="time" data-act="evs" data-id="' + esc(e.id) + '" value="' + esc(e.start || "") + '" aria-label="Beginn">' +
-        "<span>bis</span>" + '<input type="time" data-act="eve" data-id="' + esc(e.id) + '" value="' + esc(e.end || "") + '" aria-label="Ende">' +
-        '<input class="in" type="text" data-act="evt" data-id="' + esc(e.id) + '" value="' + esc(e.text) + '" aria-label="Titel des Termins">' +
-        '<select data-act="evw" data-id="' + esc(e.id) + '" aria-label="Wer">' + whoOpts(e.who) + "</select>" +
-        '<button type="button" class="x" data-act="delev" data-id="' + esc(e.id) + '">Entfernen</button></div>';
-    }).join("");
-    return '<p class="sub">Termine mit Uhrzeit</p>' + rows +
-      '<form class="addf" data-act="addev"><input type="hidden" name="date" value="' + date + '">' +
-      '<input type="time" name="start" aria-label="Beginn"><input type="time" name="end" aria-label="Ende">' +
-      '<input class="in" type="text" name="text" placeholder="Termin, z. B. GoDi oder Flug" aria-label="Termin">' +
-      '<select name="who" aria-label="Wer">' + whoOpts("Beide") + '</select><button class="btn" type="submit">Termin hinzufügen</button></form>';
+  function evRow(e) {
+    var id = esc(e.id);
+    return '<div class="evx">' +
+      '<label class="f">Termin<input class="in" type="text" data-act="evt" data-id="' + id + '" value="' + esc(e.text) + '"></label>' +
+      '<label class="f">Wer<select data-act="evw" data-id="' + id + '">' + whoOpts(e.who) + "</select></label>" +
+      '<div class="f">Von' + timeSel({ h: 'data-act="evs" data-id="' + id + '" data-part="h"', m: 'data-act="evs" data-id="' + id + '" data-part="m"' }, e.start, true) + "</div>" +
+      '<div class="f">Bis' + timeSel({ h: 'data-act="eve" data-id="' + id + '" data-part="h"', m: 'data-act="eve" data-id="' + id + '" data-part="m"' }, e.end, true) + "</div>" +
+      '<label class="f">Wo<input class="in" type="text" list="locs" data-act="evl" data-id="' + id + '" value="' + esc(e.loc) + '" placeholder="z. B. Istrup"></label>' +
+      '<label class="f">Notiz<input class="in" type="text" data-act="evn" data-id="' + id + '" value="' + esc(e.note) + '"></label>' +
+      '<button type="button" class="x" data-act="delev" data-id="' + id + '">Termin entfernen</button></div>';
   }
   function editorHtml(m, d, evs) {
-    return '<div class="editor"><div class="edg">' +
-      '<label class="f">Simon, Ort am Abend<select data-act="sp" data-date="' + d.date + '">' + optsHtml(m, d.sp) + "</select></label>" +
-      '<label class="f">Simon, Notiz<input type="text" data-act="sn" data-date="' + d.date + '" value="' + esc(d.sn) + '" placeholder="z. B. Zug 14:32"></label>' +
-      '<label class="f">Liz, Ort am Abend<select data-act="lp" data-date="' + d.date + '">' + optsHtml(m, d.lp) + "</select></label>" +
-      '<label class="f">Liz, Notiz<input type="text" data-act="ln" data-date="' + d.date + '" value="' + esc(d.ln) + '" placeholder="z. B. Homeoffice bis 16 Uhr"></label></div>' +
-      '<label class="f">Plan für den Tag<textarea rows="2" data-act="plan" data-date="' + d.date + '">' + esc(d.plan) + "</textarea></label>" +
-      evEditHtml(evs, d.date) +
+    return '<div class="editor">' +
+      '<p class="sub">Neuer Termin</p>' +
+      '<form class="evx add" data-act="addev"><input type="hidden" name="date" value="' + d.date + '">' +
+      '<label class="f">Termin<input class="in" type="text" name="text" placeholder="z. B. GoDi, Flug, Essen"></label>' +
+      '<label class="f">Wer<select name="who">' + whoOpts(S.lastWho) + "</select></label>" +
+      '<div class="f">Von' + timeSel({ h: 'name="sh"', m: 'name="sm"' }, "", false) + "</div>" +
+      '<div class="f">Bis' + timeSel({ h: 'name="eh"', m: 'name="em"' }, "", false) + "</div>" +
+      '<label class="f">Wo<input class="in" type="text" name="loc" list="locs" placeholder="z. B. Istrup"></label>' +
+      '<label class="f">Notiz<input class="in" type="text" name="note"></label>' +
+      '<button class="btn" type="submit">Termin hinzufügen</button></form>' +
+      (evs.length ? '<p class="sub">Termine an diesem Tag</p>' + evs.map(evRow).join("") : "") +
+      '<p class="sub">Ort am Abend</p><div class="edg">' +
+      '<label class="f">Simon<select data-act="sp" data-date="' + d.date + '">' + optsHtml(m, d.sp) + "</select></label>" +
+      '<label class="f">Liz<select data-act="lp" data-date="' + d.date + '">' + optsHtml(m, d.lp) + "</select></label></div>" +
+      '<p class="sub">To-do oder Idee</p>' +
       '<form class="addf" data-act="additem"><input type="hidden" name="date" value="' + d.date + '">' +
       '<input class="in" type="text" name="text" placeholder="To-do oder Idee für diesen Tag" aria-label="Neuer Eintrag">' +
       '<select name="kind" aria-label="Art"><option value="todo">To-do</option><option value="idee">Idee</option></select>' +
-      '<select name="who" aria-label="Wer">' + WHO + '</select><button class="btn" type="submit">Hinzufügen</button></form></div>';
+      '<select name="who" aria-label="Wer">' + WHO + '</select><button class="btn sm" type="submit">Hinzufügen</button></form></div>';
   }
   function dayRow(m, d, i) {
     var prev = i > 0 ? m.days[i - 1] : null, sp = m.P(d.sp), lp = m.P(d.lp), tog = d.sp === d.lp;
@@ -496,23 +545,24 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
       var from = "";
       if (fs && fl) from = fs === fl ? fs : "Simon: " + fs + ", Liz: " + fl;
       else if (fs) from = "Simon: " + fs; else if (fl) from = "Liz: " + fl;
-      var notes = []; if (d.sn) notes.push("Simon: " + d.sn); if (d.ln) notes.push("Liz: " + d.ln);
       lanes = '<div class="lane both c' + sp.c + '"><span class="who">Simon &amp; Liz</span><span class="place">' + esc(sp.name) + "</span>" +
-        (from ? '<span class="from">← ' + esc(from) + "</span>" : "") + (notes.length ? '<span class="lnote">' + esc(notes.join(" · ")) + "</span>" : "") + "</div>";
+        (from ? '<span class="from">← ' + esc(from) + "</span>" : "") + "</div>";
     } else {
-      lanes = laneHtml("Simon", sp, d.sn, fs) + laneHtml("Liz", lp, d.ln, fl);
+      lanes = laneHtml("Simon", sp, fs) + laneHtml("Liz", lp, fl);
     }
     var its = m.items.filter(function (x) { return x.date === d.date; });
     var evs = dayEvents(m, d.date);
     var isOpen = !!S.open[d.date];
-    var t = new Date(); var ts = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
+    var t = new Date(), ts = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
     return '<article class="day' + (d.date === ts ? " today" : "") + '" id="d-' + d.date + '">' +
       '<div class="dd"><span class="dow">' + wd(d.date) + '</span><span class="dnum">' + fmt(d.date) + "</span>" + (d.tag ? '<span class="tag">' + esc(d.tag) + "</span>" : "") + "</div>" +
-      '<div class="lanes">' + lanes + "</div>" +
-      '<div class="plan">' + (d.plan || !evs.length ? '<p class="ptxt">' + esc(d.plan || "Noch nichts geplant") + "</p>" : "") + evHtml(evs) +
-      (fs || fl ? '<span class="travel">Reisetag</span>' : "") +
+      '<div class="dc"><div class="lanes">' + lanes + "</div>" + barHtml(evs) + listHtml(evs) +
       (its.length ? '<ul class="its">' + its.map(itemInline).join("") + "</ul>" : "") +
-      '<button type="button" class="edit" data-act="toggle" data-date="' + d.date + '" aria-expanded="' + isOpen + '">' + (isOpen ? "Fertig" : "Bearbeiten") + "</button></div>" +
+      '<div class="acts">' + (isOpen
+        ? '<button type="button" class="edit" data-act="toggle" data-date="' + d.date + '" aria-expanded="true">Fertig</button>'
+        : '<button type="button" class="btn sm" data-act="toggle" data-date="' + d.date + '" aria-expanded="false">+ Termin</button>' +
+          '<button type="button" class="edit" data-act="toggle" data-date="' + d.date + '" aria-expanded="false">Bearbeiten</button>') +
+      (fs || fl ? '<span class="travel">Reisetag</span>' : "") + "</div></div>" +
       (isOpen ? editorHtml(m, d, evs) : "") + "</article>";
   }
   function timeline(m) {
@@ -537,7 +587,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     return '<p class="lead">Die Fahrten ergeben sich aus den Ortswechseln in der Zeitleiste. <b>' + m.legs.length + "</b> insgesamt, <b>" + booked + "</b> gebucht.</p>" +
       '<div class="chips">' + chips + "</div>" + (rows ? '<ul class="legs">' + rows + "</ul>" : '<p class="empty">Keine Fahrten für diese Auswahl.</p>');
   }
-  function listHtml(m, kind, title, ph) {
+  function listBlock(m, kind, title, ph) {
     var its = m.items.filter(function (i) { return i.kind === kind; });
     its.sort(function (a, b) { return (a.done - b.done) || String(a.date || "9").localeCompare(String(b.date || "9")); });
     var rows = its.map(function (i) {
@@ -551,7 +601,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
       '<button class="btn" type="submit">Hinzufügen</button></form></section>';
   }
   function todos(m) {
-    return '<div class="cols">' + listHtml(m, "todo", "To-dos", "Neues To-do") + listHtml(m, "idee", "Ideen und Unternehmungen", "Neue Idee") + "</div>";
+    return '<div class="cols">' + listBlock(m, "todo", "To-dos", "Neues To-do") + listBlock(m, "idee", "Ideen und Unternehmungen", "Neue Idee") + "</div>";
   }
   function placesView(m) {
     var use = {};
@@ -568,7 +618,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
   }
   function noteHtml() {
     if (ack) return "";
-    return '<div class="callout"><p>Die Orte habe ich aus eurem neuen Plan abgeleitet: Istrup, Liz zu Hause, Urlaub mit noch offenem Ziel. Als Ort zählt, wo ihr am Abend seid. Bitte prüfen und bei „Bearbeiten“ anpassen.</p>' +
+    return '<div class="callout"><p>Ich habe den Plan in Termine zerlegt und die Orte abgeleitet: Istrup, Liz zu Hause, Urlaub mit noch offenem Ziel. Als Ort zählt, wo ihr am Abend seid. Uhrzeiten und Wo-Angaben fehlen noch und lassen sich bei jedem Tag mit „+ Termin“ oder „Bearbeiten“ ergänzen.</p>' +
       '<button type="button" class="btn" data-act="ack">Verstanden</button></div>';
   }
 
@@ -585,6 +635,10 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     Array.prototype.forEach.call(document.querySelectorAll(".tabs button"), function (b) {
       b.setAttribute("aria-selected", String(b.dataset.tab === S.tab));
     });
+    var locs = {};
+    m.places.forEach(function (p) { locs[p.name] = 1; });
+    m.events.forEach(function (e) { if (e.loc) locs[e.loc] = 1; });
+    $("locs").innerHTML = Object.keys(locs).map(function (n) { return '<option value="' + esc(n) + '"></option>'; }).join("");
     $("note").innerHTML = S.tab === "zeit" ? noteHtml() : "";
     $("view").innerHTML = S.tab === "zeit" ? timeline(m) : S.tab === "reisen" ? trips(m) : S.tab === "todo" ? todos(m) : placesView(m);
   }
@@ -611,18 +665,23 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
       if (n > 0) say("Dieser Ort wird noch an " + n + " Tagen genutzt. Erst dort einen anderen wählen.");
       else put("place_" + t.dataset.id, { _del: true });
     }
-    else if (a === "ack") { ack = true; try { localStorage.setItem("wp_ack", "1"); } catch (er) {} render(true); }
+    else if (a === "ack") { ack = true; try { localStorage.setItem("wp_ack2", "1"); } catch (er) {} render(true); }
   });
   document.addEventListener("change", function (e) {
     var t = e.target, a = t.dataset && t.dataset.act;
     if (!a) return;
     var dt = t.dataset.date, id = t.dataset.id, key = t.dataset.key, o = {};
     if (a === "sp" || a === "lp") { o[a] = t.value; put("day_" + dt, o); }
-    else if (a === "sn" || a === "ln" || a === "plan") { o[a] = t.value; put("day_" + dt, o, { defer: true }); }
-    else if (a === "evs") put("ev_" + id, { start: t.value }, { defer: true });
-    else if (a === "eve") put("ev_" + id, { end: t.value }, { defer: true });
     else if (a === "evt") put("ev_" + id, { text: t.value.trim() || "Termin" }, { defer: true });
+    else if (a === "evl") put("ev_" + id, { loc: t.value.trim() }, { defer: true });
+    else if (a === "evn") put("ev_" + id, { note: t.value.trim() }, { defer: true });
     else if (a === "evw") put("ev_" + id, { who: t.value });
+    else if (a === "evs" || a === "eve") {
+      var box = t.closest(".tsel");
+      var h = box.querySelector('[data-part="h"]').value, mm = box.querySelector('[data-part="m"]').value;
+      o[a === "evs" ? "start" : "end"] = h === "" ? "" : h + ":" + (mm || "00");
+      put("ev_" + id, o);
+    }
     else if (a === "done") put("item_" + id, { done: t.checked });
     else if (a === "mode") put("leg_" + key, { mode: t.value });
     else if (a === "lnote") put("leg_" + key, { note: t.value }, { defer: true });
@@ -642,8 +701,12 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     } else if (a === "addev") {
       var title = String(fd.get("text") || "").trim();
       if (!title) { say("Bitte einen Titel für den Termin eintragen."); return; }
+      var tm = function (p) { var h = fd.get(p + "h"), mi = fd.get(p + "m"); return h ? h + ":" + (mi || "00") : ""; };
+      var start = tm("s"), end = start ? tm("e") : "";
+      S.lastWho = fd.get("who") || "Beide";
       put("ev_v" + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), {
-        date: fd.get("date"), start: fd.get("start") || "", end: fd.get("end") || "", text: title, who: fd.get("who") || "Beide", ts: Date.now()
+        date: fd.get("date"), start: start, end: end, text: title, who: S.lastWho,
+        loc: String(fd.get("loc") || "").trim(), note: String(fd.get("note") || "").trim(), ts: Date.now()
       });
     } else if (a === "addplace") {
       var name = String(fd.get("name") || "").trim();
