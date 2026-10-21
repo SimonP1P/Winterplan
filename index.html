@@ -102,7 +102,7 @@ h1{margin:0 0 10px;font-family:var(--f-display);font-weight:800;font-size:clamp(
 .blk.s{top:2px;height:20px;line-height:18px;background:var(--accent)}
 .blk.l{top:24px;height:20px;line-height:18px;background:var(--c4)}
 .blk.b{top:2px;height:42px;line-height:40px;background:var(--ink2)}
-.ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink2);font-variant-numeric:tabular-nums;padding:0 1px;margin-top:-6px}
+.ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--ink2);font-variant-numeric:tabular-nums;padding:0 1px;margin-top:3px}
 .wd{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;flex:none}
 .wd.s{background:var(--accent)}.wd.l{background:var(--c4)}.wd.b{background:var(--ink2)}
 
@@ -115,7 +115,7 @@ h1{margin:0 0 10px;font-family:var(--f-display);font-weight:800;font-size:clamp(
 .ev .nt{display:block;font-size:12.5px;color:var(--ink2);padding-left:16px}
 .its{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
 .it{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;min-width:0}
-.it label{display:flex;align-items:flex-start;gap:8px;min-width:0;flex:1 1 200px}
+.it label{display:flex;align-items:flex-start;gap:8px;min-width:0;flex:1 1 120px}
 .it input[type=checkbox],.leg input[type=checkbox]{accent-color:var(--accent);width:17px;height:17px;margin:1px 0 0;flex:none}
 .it .done{text-decoration:line-through;color:var(--ink2)}
 .idea{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink2)}
@@ -124,11 +124,27 @@ h1{margin:0 0 10px;font-family:var(--f-display);font-weight:800;font-size:clamp(
 .edit{background:none;border:0;color:var(--accent);font-weight:600;padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 
 /* Bearbeiten */
-.editor{grid-column:1/-1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px;min-width:0}
-.sub{margin:4px 0 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink2)}
-.evx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}
+.editor{grid-column:1/-1;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:22px;min-width:0}
+.ecol{display:flex;flex-direction:column;gap:12px;min-width:0}
+.eh{margin:0;font-family:var(--f-display);font-weight:800;font-size:19px;line-height:1.2}
+.sub{margin:6px 0 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--ink2);display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sub .meta{text-transform:none;letter-spacing:0;font-weight:500}
+.evx{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--line);border-radius:10px;min-width:0}
 .evx.add{border-color:var(--accent)}
-.edg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.trio{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.trio .f{flex:0 0 auto}
+.trio .f.wer{flex:1 1 110px}
+.trio .f.wer select{width:100%}
+.edg{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.ecol .addf .in{flex:1 1 150px}
+textarea.in{min-height:120px;resize:vertical;line-height:1.45}
+select:disabled{opacity:.45}
+.dnote{margin:0;padding:8px 11px;background:var(--surface2);border-radius:8px;font-size:13.5px;color:var(--ink2);white-space:pre-wrap;overflow-wrap:anywhere}
+@media (min-width:860px){
+  .editor{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+  .ecol + .ecol{border-left:1px solid var(--line);padding-left:22px}
+}
 
 @media (min-width:760px){
   .day{grid-template-columns:96px minmax(0,1fr)}
@@ -381,7 +397,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
   }
   function dayState(d) {
     var o = S.kv["day_" + d.date] || {};
-    return { date: d.date, tag: d.tag || "", sp: o.sp || d.sp, lp: o.lp || d.lp };
+    return { date: d.date, tag: d.tag || "", sp: o.sp || d.sp, lp: o.lp || d.lp, dn: o.dn || "" };
   }
   function model() {
     var places = getPlaces(), pm = {};
@@ -406,7 +422,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     var a = tmin(e.start), b = tmin(e.end);
     return e.start + (e.end ? "–" + e.end : "") + (b !== null && b < a ? " (+1)" : "");
   }
-  function timeSel(attrs, val, disabledIfEmpty) {
+  function timeSel(attrs, val, hDis, mDis) {
     var h = "", m = "";
     if (val) { var p = String(val).split(":"); h = pad(+p[0]); m = pad(+p[1] || 0); }
     var ho = '<option value="">–</option>', i;
@@ -416,8 +432,8 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     if (m && mins.indexOf(m) < 0) { mins.push(m); mins.sort(); }
     var mo = mins.map(function (x) { return '<option value="' + x + '"' + (x === m ? " selected" : "") + ">" + x + "</option>"; }).join("");
     return '<span class="tsel">' +
-      '<select ' + attrs.h + ' aria-label="Stunde">' + ho + "</select><span>:</span>" +
-      '<select ' + attrs.m + ' aria-label="Minute"' + (disabledIfEmpty && h === "" ? " disabled" : "") + ">" + mo + "</select></span>";
+      '<select ' + attrs.h + ' aria-label="Stunde"' + (hDis ? " disabled" : "") + ">" + ho + "</select><span>:</span>" +
+      '<select ' + attrs.m + ' aria-label="Minute"' + (mDis ? " disabled" : "") + ">" + mo + "</select></span>";
   }
   function whoCls(w) { return { Beide: "b", Simon: "s", Liz: "l" }[w] || "b"; }
   function whoOpts(sel) {
@@ -505,36 +521,53 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     }).join("") + "</ul>";
   }
   function evRow(e) {
-    var id = esc(e.id);
+    var a = 'data-id="' + esc(e.id) + '"';
     return '<div class="evx">' +
-      '<label class="f">Termin<input class="in" type="text" data-act="evt" data-id="' + id + '" value="' + esc(e.text) + '"></label>' +
-      '<label class="f">Wer<select data-act="evw" data-id="' + id + '">' + whoOpts(e.who) + "</select></label>" +
-      '<div class="f">Von' + timeSel({ h: 'data-act="evs" data-id="' + id + '" data-part="h"', m: 'data-act="evs" data-id="' + id + '" data-part="m"' }, e.start, true) + "</div>" +
-      '<div class="f">Bis' + timeSel({ h: 'data-act="eve" data-id="' + id + '" data-part="h"', m: 'data-act="eve" data-id="' + id + '" data-part="m"' }, e.end, true) + "</div>" +
-      '<label class="f">Wo<input class="in" type="text" list="locs" data-act="evl" data-id="' + id + '" value="' + esc(e.loc) + '" placeholder="z. B. Istrup"></label>' +
-      '<label class="f">Notiz<input class="in" type="text" data-act="evn" data-id="' + id + '" value="' + esc(e.note) + '"></label>' +
-      '<button type="button" class="x" data-act="delev" data-id="' + id + '">Termin entfernen</button></div>';
+      '<label class="f">Termin<input class="in" type="text" data-act="evt" ' + a + ' value="' + esc(e.text) + '"></label>' +
+      '<div class="trio"><label class="f wer">Wer<select data-act="evw" ' + a + '>' + whoOpts(e.who) + "</select></label>" +
+      '<div class="f">Von' + timeSel({ h: 'data-act="evs" ' + a + ' data-part="h"', m: 'data-act="evs" ' + a + ' data-part="m"' }, e.start, false, !e.start) + "</div>" +
+      '<div class="f">Bis' + timeSel({ h: 'data-act="eve" ' + a + ' data-part="h"', m: 'data-act="eve" ' + a + ' data-part="m"' }, e.end, !e.start, !e.start || !e.end) + "</div></div>" +
+      '<div class="duo"><label class="f">Wo<input class="in" type="text" list="locs" data-act="evl" ' + a + ' value="' + esc(e.loc) + '" placeholder="z. B. Istrup"></label>' +
+      '<label class="f">Notiz<input class="in" type="text" data-act="evn" ' + a + ' value="' + esc(e.note) + '"></label></div>' +
+      '<div><button type="button" class="x" data-act="delev" ' + a + ">Termin entfernen</button></div></div>";
+  }
+  function itemRow(i) {
+    return '<li class="it"><label><input type="checkbox" data-act="done" data-id="' + esc(i.id) + '"' + (i.done ? " checked" : "") + '><span class="' + (i.done ? "done" : "") + '">' + esc(i.text) + "</span></label>" +
+      '<span class="meta">' + esc(i.who) + '</span><button type="button" class="x" data-act="delitem" data-id="' + esc(i.id) + '">Entfernen</button></li>';
+  }
+  function addItemForm(kind, date, ph) {
+    return '<form class="addf" data-act="additem"><input type="hidden" name="kind" value="' + kind + '"><input type="hidden" name="date" value="' + date + '">' +
+      '<input class="in" type="text" name="text" placeholder="' + ph + '" aria-label="' + ph + '">' +
+      '<select name="who" aria-label="Wer">' + WHO + '</select><button class="btn sm" type="submit">Hinzufügen</button></form>';
   }
   function editorHtml(m, d, evs) {
+    var todos = m.items.filter(function (x) { return x.date === d.date && x.kind === "todo"; });
+    var ideas = m.items.filter(function (x) { return x.date === d.date && x.kind === "idee"; });
+    var done = todos.filter(function (x) { return x.done; }).length;
     return '<div class="editor">' +
+      '<div class="ecol"><h3 class="eh">Termine</h3>' +
       '<p class="sub">Neuer Termin</p>' +
       '<form class="evx add" data-act="addev"><input type="hidden" name="date" value="' + d.date + '">' +
       '<label class="f">Termin<input class="in" type="text" name="text" placeholder="z. B. GoDi, Flug, Essen"></label>' +
-      '<label class="f">Wer<select name="who">' + whoOpts(S.lastWho) + "</select></label>" +
-      '<div class="f">Von' + timeSel({ h: 'name="sh"', m: 'name="sm"' }, "", false) + "</div>" +
-      '<div class="f">Bis' + timeSel({ h: 'name="eh"', m: 'name="em"' }, "", false) + "</div>" +
-      '<label class="f">Wo<input class="in" type="text" name="loc" list="locs" placeholder="z. B. Istrup"></label>' +
-      '<label class="f">Notiz<input class="in" type="text" name="note"></label>' +
-      '<button class="btn" type="submit">Termin hinzufügen</button></form>' +
-      (evs.length ? '<p class="sub">Termine an diesem Tag</p>' + evs.map(evRow).join("") : "") +
+      '<div class="trio"><label class="f wer">Wer<select name="who">' + whoOpts(S.lastWho) + "</select></label>" +
+      '<div class="f">Von' + timeSel({ h: 'name="sh"', m: 'name="sm"' }, "", false, true) + "</div>" +
+      '<div class="f">Bis' + timeSel({ h: 'name="eh"', m: 'name="em"' }, "", true, true) + "</div></div>" +
+      '<div class="duo"><label class="f">Wo<input class="in" type="text" name="loc" list="locs" placeholder="z. B. Istrup"></label>' +
+      '<label class="f">Notiz<input class="in" type="text" name="note"></label></div>' +
+      '<div><button class="btn" type="submit">Termin hinzufügen</button></div></form>' +
+      (evs.length ? '<p class="sub"><span>Eingetragen</span><span class="meta">' + evs.length + "</span></p>" + evs.map(evRow).join("") : "") +
       '<p class="sub">Ort am Abend</p><div class="edg">' +
       '<label class="f">Simon<select data-act="sp" data-date="' + d.date + '">' + optsHtml(m, d.sp) + "</select></label>" +
-      '<label class="f">Liz<select data-act="lp" data-date="' + d.date + '">' + optsHtml(m, d.lp) + "</select></label></div>" +
-      '<p class="sub">To-do oder Idee</p>' +
-      '<form class="addf" data-act="additem"><input type="hidden" name="date" value="' + d.date + '">' +
-      '<input class="in" type="text" name="text" placeholder="To-do oder Idee für diesen Tag" aria-label="Neuer Eintrag">' +
-      '<select name="kind" aria-label="Art"><option value="todo">To-do</option><option value="idee">Idee</option></select>' +
-      '<select name="who" aria-label="Wer">' + WHO + '</select><button class="btn sm" type="submit">Hinzufügen</button></form></div>';
+      '<label class="f">Liz<select data-act="lp" data-date="' + d.date + '">' + optsHtml(m, d.lp) + "</select></label></div></div>" +
+      '<div class="ecol"><h3 class="eh">Ideen, Notizen &amp; Checkliste</h3>' +
+      '<p class="sub"><span>Checkliste</span>' + (todos.length ? '<span class="meta">' + done + " von " + todos.length + " erledigt</span>" : "") + "</p>" +
+      (todos.length ? '<ul class="its">' + todos.map(itemRow).join("") + "</ul>" : '<p class="meta">Noch keine Punkte.</p>') +
+      addItemForm("todo", d.date, "Neuer Punkt, z. B. Tickets drucken") +
+      '<p class="sub"><span>Ideen</span></p>' +
+      (ideas.length ? '<ul class="its">' + ideas.map(itemRow).join("") + "</ul>" : '<p class="meta">Noch keine Ideen.</p>') +
+      addItemForm("idee", d.date, "Neue Idee, z. B. Therme") +
+      '<p class="sub"><span>Notizen</span></p>' +
+      '<textarea class="in" data-act="dnote" data-date="' + d.date + '" placeholder="Freier Text, z. B. Adresse, Treffpunkt, Gedanken …" aria-label="Notizen zum Tag">' + esc(d.dn) + "</textarea></div></div>";
   }
   function dayRow(m, d, i) {
     var prev = i > 0 ? m.days[i - 1] : null, sp = m.P(d.sp), lp = m.P(d.lp), tog = d.sp === d.lp;
@@ -556,7 +589,7 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     var t = new Date(), ts = t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate());
     return '<article class="day' + (d.date === ts ? " today" : "") + '" id="d-' + d.date + '">' +
       '<div class="dd"><span class="dow">' + wd(d.date) + '</span><span class="dnum">' + fmt(d.date) + "</span>" + (d.tag ? '<span class="tag">' + esc(d.tag) + "</span>" : "") + "</div>" +
-      '<div class="dc"><div class="lanes">' + lanes + "</div>" + barHtml(evs) + listHtml(evs) +
+      '<div class="dc"><div class="lanes">' + lanes + "</div>" + barHtml(evs) + listHtml(evs) + (d.dn ? '<p class="dnote">' + esc(d.dn) + "</p>" : "") +
       (its.length ? '<ul class="its">' + its.map(itemInline).join("") + "</ul>" : "") +
       '<div class="acts">' + (isOpen
         ? '<button type="button" class="edit" data-act="toggle" data-date="' + d.date + '" aria-expanded="true">Fertig</button>'
@@ -668,6 +701,16 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     else if (a === "ack") { ack = true; try { localStorage.setItem("wp_ack2", "1"); } catch (er) {} render(true); }
   });
   document.addEventListener("change", function (e) {
+    var tf = e.target.form;
+    if (tf && tf.dataset.act === "addev" && (e.target.name === "sh" || e.target.name === "eh")) {
+      var g = function (n) { return tf.querySelector('[name="' + n + '"]'); };
+      var hasS = !!g("sh").value;
+      g("sm").disabled = !hasS; g("eh").disabled = !hasS;
+      if (!hasS) g("eh").value = "";
+      g("em").disabled = !(hasS && g("eh").value);
+    }
+  });
+  document.addEventListener("change", function (e) {
     var t = e.target, a = t.dataset && t.dataset.act;
     if (!a) return;
     var dt = t.dataset.date, id = t.dataset.id, key = t.dataset.key, o = {};
@@ -675,11 +718,13 @@ h2{font-family:var(--f-display);font-weight:800;font-size:20px;margin:6px 0 10px
     else if (a === "evt") put("ev_" + id, { text: t.value.trim() || "Termin" }, { defer: true });
     else if (a === "evl") put("ev_" + id, { loc: t.value.trim() }, { defer: true });
     else if (a === "evn") put("ev_" + id, { note: t.value.trim() }, { defer: true });
+    else if (a === "dnote") put("day_" + dt, { dn: t.value.replace(/^\s+|\s+$/g, "") }, { defer: true });
     else if (a === "evw") put("ev_" + id, { who: t.value });
     else if (a === "evs" || a === "eve") {
       var box = t.closest(".tsel");
       var h = box.querySelector('[data-part="h"]').value, mm = box.querySelector('[data-part="m"]').value;
       o[a === "evs" ? "start" : "end"] = h === "" ? "" : h + ":" + (mm || "00");
+      if (a === "evs" && h === "") o.end = "";
       put("ev_" + id, o);
     }
     else if (a === "done") put("item_" + id, { done: t.checked });
